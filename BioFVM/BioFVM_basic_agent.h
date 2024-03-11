@@ -95,6 +95,7 @@ class Basic_Agent
 	void release_internalized_substrates( void ); 
 
 	void set_internal_uptake_constants( double dt ); // any time you update the cell volume or rates, should call this function. 
+	void set_transmembrane_diffusion_constants( double dt ); // any time you update the cell volume or rates, should call this function. 
 
 	void register_microenvironment( Microenvironment* );
 	Microenvironment* get_microenvironment( void ); 
@@ -115,6 +116,7 @@ class Basic_Agent
 	// simulate secretion and uptake at the nearest voxel at the indicated microenvironment.
 	// if no microenvironment indicated, use the currently selected microenvironment. 
 	void simulate_secretion_and_uptake( Microenvironment* M, double dt ); 
+	void simulate_transmembrane_diffusion( Microenvironment* M, double dt ); 
 
 	int get_current_voxel_index( void ); 
 	// directly access the substrate vector at the nearest voxel at the indicated microenvironment 

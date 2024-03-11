@@ -170,6 +170,36 @@ void Basic_Agent::set_internal_uptake_constants( double dt )
 	return; 
 }
 
+void Basic_Agent::set_transmembrane_diffusion_constants( double dt )
+{
+	// overall form: dI/dt = s*(E-I); dE/dt = s*(I-E) + e
+	// where I is the internal substrate concentration, E is the extracellular substrate concentration (in voxel), s is the diffusion (secretion) rate, and e is the net export rate
+	// use analytical solution to update concentrations (splitting up the diffusion and export components because that's what I solved for)
+	double voxel_coeff = volume / (volume + (microenvironment->voxels(current_voxel_index)).volume); // cell volume / (cell volume + voxel volume)
+	double cell_coeff = volume * (1 - voxel_coeff); // cell volume * (voxel volume / (cell volume + voxel volume))
+	double lambda2_base_dt = -dt*(1+volume/(microenvironment->voxels(current_voxel_index)).volume); // -dt * (1 + V_cell/V_voxel)
+
+	double exp_decay_term;
+	for (unsigned int i = 0; i < (*secretion_rates).size(); i++)
+	{
+		exp_decay_term = (1 - exp((*secretion_rates)[i] * lambda2_base_dt));
+		cell_source_sink_solver_temp1[i] = cell_coeff * exp_decay_term;
+		cell_source_sink_solver_temp2[i] = voxel_coeff * exp_decay_term;
+	}
+	
+	// temp for net export 
+	cell_source_sink_solver_temp_export1 = *net_export_rates; 
+	cell_source_sink_solver_temp_export1 *= dt; // amount exported in dt of time 
+		
+	// change in surrounding density 
+	cell_source_sink_solver_temp_export2 = cell_source_sink_solver_temp_export1;
+	cell_source_sink_solver_temp_export2 /= ( (microenvironment->voxels(current_voxel_index)).volume ) ; 
+	
+	volume_is_changed = false; 
+	
+	return; 
+}
+
 void Basic_Agent::register_microenvironment( Microenvironment* microenvironment_in )
 {
 	microenvironment = microenvironment_in; 	
@@ -331,6 +361,38 @@ void Basic_Agent::simulate_secretion_and_uptake( Microenvironment* pS, double dt
 	(*pS)(current_voxel_index) += cell_source_sink_solver_temp1; 
 	(*pS)(current_voxel_index) /= cell_source_sink_solver_temp2; 
 	
+	// now do net export 
+	(*pS)(current_voxel_index) += cell_source_sink_solver_temp_export2; 
+	if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true ) 
+	{
+		*internalized_substrates -= cell_source_sink_solver_temp_export1; 
+	}
+
+	return; 
+}
+
+void Basic_Agent::simulate_transmembrane_diffusion( Microenvironment* pS, double dt )
+{
+	if(!is_active)
+	{ return; }
+	
+	if( volume_is_changed )
+	{
+		set_transmembrane_diffusion_constants(dt);
+		volume_is_changed = false;
+	}
+	
+	double conc_diff;
+	for (unsigned int i = 0; i < (*secretion_rates).size(); i++)
+	{
+		conc_diff = (*internalized_substrates)[i]/volume - nearest_density_vector()[i];
+		if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true )
+		{
+			(*internalized_substrates)[i] -= cell_source_sink_solver_temp1[i] * conc_diff;
+		}
+		(*pS)(current_voxel_index)[i] += cell_source_sink_solver_temp2[i] * conc_diff;
+	}
+
 	// now do net export 
 	(*pS)(current_voxel_index) += cell_source_sink_solver_temp_export2; 
 	if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true ) 

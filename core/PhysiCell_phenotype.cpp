@@ -921,11 +921,11 @@ void Secretion::sync_to_microenvironment( Microenvironment* pNew_Microenvironmen
 	return; 
 }
 
-void Secretion::advance( Basic_Agent* pCell, Phenotype& phenotype , double dt )
+bool Secretion::prepare_advancer(Basic_Agent* pCell, Phenotype& phenotype , double dt)
 {
 	// if this phenotype is not associated with a cell, exit 
 	if( pCell == NULL )
-	{ return; }
+	{ return false; }
 
 	// if there is no microenvironment, attempt to sync. 
 	if( pMicroenvironment == NULL )
@@ -944,7 +944,7 @@ void Secretion::advance( Basic_Agent* pCell, Phenotype& phenotype , double dt )
 		// if we've still failed, return. 
 		if( pMicroenvironment == NULL ) 
 		{
-			return; 
+			return false; 
 		}
 	}
 
@@ -964,11 +964,26 @@ void Secretion::advance( Basic_Agent* pCell, Phenotype& phenotype , double dt )
 		pCell->set_total_volume( phenotype.volume.total ); 
 		pCell->set_internal_uptake_constants( dt );
 	}
+	return true;
+}
 
-	// now, call the BioFVM secretion/uptake function 
-	
-	pCell->simulate_secretion_and_uptake( pMicroenvironment , dt ); 
-	
+void Secretion::default_advancer( Basic_Agent* pCell, Phenotype& phenotype , double dt )
+{
+	if (prepare_advancer(pCell, phenotype, dt))
+	{
+		// now, call the BioFVM secretion/uptake function
+		pCell->simulate_secretion_and_uptake(pMicroenvironment, dt);
+	}
+	return; 
+}
+
+void Secretion::transmembrane_diffusion_advancer( Basic_Agent* pCell, Phenotype& phenotype , double dt )
+{
+	if (prepare_advancer(pCell, phenotype, dt))
+	{
+		// now, call the BioFVM secretion/uptake function
+		pCell->simulate_transmembrane_diffusion(pMicroenvironment, dt);
+	}
 	return; 
 }
 

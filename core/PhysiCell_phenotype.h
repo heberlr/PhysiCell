@@ -436,8 +436,9 @@ class Motility
 
 class Secretion
 {
- private:
- public:
+public:
+	typedef void (Secretion::*Advancer)(Basic_Agent *pCell, Phenotype &phenotype, double dt);
+
 	Microenvironment* pMicroenvironment; 
 	
 	std::vector<double> secretion_rates; 
@@ -451,9 +452,18 @@ class Secretion
 
 	// use this to properly size the secretion parameters to the microenvironment in 
 	// pMicroenvironment
-	void sync_to_current_microenvironment( void ); // done 
-	
-	void advance( Basic_Agent* pCell, Phenotype& phenotype , double dt ); 
+	void sync_to_current_microenvironment( void ); // done
+
+	bool prepare_advancer( Basic_Agent* pCell, Phenotype& phenotype, double dt);
+	void set_advancer(Advancer ptr) {
+        advancer = ptr;
+    }
+	void advance(Basic_Agent *pCell, Phenotype &phenotype, double dt)
+	{
+		(this->*advancer)(pCell, phenotype, dt);
+	}
+	void default_advancer( Basic_Agent* pCell, Phenotype& phenotype , double dt ); 
+	void transmembrane_diffusion_advancer( Basic_Agent* pCell, Phenotype& phenotype , double dt ); 
 	
 	// use this to properly size the secretion parameters to the microenvironment 
 	void sync_to_microenvironment( Microenvironment* pNew_Microenvironment ); // done 
@@ -468,6 +478,10 @@ class Secretion
 	double& uptake_rate( std::string name ); 
 	double& saturation_density( std::string name ); 
 	double& net_export_rate( std::string name );  	
+
+	std::string model = "default";
+private:
+	Advancer advancer;
 };
 
 class Cell_Functions

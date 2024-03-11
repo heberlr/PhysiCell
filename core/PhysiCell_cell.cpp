@@ -1060,7 +1060,6 @@ void Cell::add_potentials(Cell* other_agent)
 Cell* create_cell( Cell* (*custom_instantiate)())
 {
 	Cell* pNew; 
-	
 	if (custom_instantiate) {
 		pNew = custom_instantiate();
 	} else {
@@ -1109,8 +1108,8 @@ Cell* create_cell( Cell_Definition& cd )
 	
 	pNew->assign_orientation();
 	
-	pNew->set_total_volume( pNew->phenotype.volume.total ); 
-	
+	pNew->set_total_volume( pNew->phenotype.volume.total );
+
 	return pNew; 
 }
 
@@ -2772,7 +2771,17 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 	if( node )
 	{
 		Secretion* pS = &(pCD->phenotype.secretion);
-		
+
+		pugi::xml_attribute attr = node.attribute("model");
+		std::string model = "default";
+		pS->set_advancer(&Secretion::default_advancer);
+		if (attr)
+		{
+			model = attr.value();
+			if (model == "transmembrane_diffusion")
+			{ pS->set_advancer(&Secretion::transmembrane_diffusion_advancer); }
+		}
+
 		// find the first substrate 
 		pugi::xml_node node_sec = node.child( "substrate" );
 		while( node_sec )
@@ -2791,12 +2800,25 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 				<< "       Please double-check your substrate name in the config file." << std::endl << std::endl; 
 				exit(-1); 
 			}			
+
+
 	
 			// secretion rate
 			pugi::xml_node node_sec1 = node_sec.child( "secretion_rate" ); 
 			if( node_sec1 )
 			{ pS->secretion_rates[index] = xml_get_my_double_value( node_sec1 ); }
 			
+			// net export rate 
+			node_sec1 = node_sec.child( "net_export_rate" ); 
+			if( node_sec1 )
+			{ pS->net_export_rates[index] = xml_get_my_double_value( node_sec1 ); }
+			
+			// could skip secretion_target and uptake_rate if using transmembrane_diffusion
+			if (model == "transmembrane_diffusion") {
+				node_sec = node_sec.next_sibling( "substrate" ); 
+				continue;
+			}
+
 			// secretion target 
 			node_sec1 = node_sec.child( "secretion_target" ); 
 			if( node_sec1 )
@@ -2806,11 +2828,6 @@ Cell_Definition* initialize_cell_definition_from_pugixml( pugi::xml_node cd_node
 			node_sec1 = node_sec.child( "uptake_rate" ); 
 			if( node_sec1 )
 			{ pS->uptake_rates[index] = xml_get_my_double_value( node_sec1 ); }
-			
-			// net export rate 
-			node_sec1 = node_sec.child( "net_export_rate" ); 
-			if( node_sec1 )
-			{ pS->net_export_rates[index] = xml_get_my_double_value( node_sec1 ); }
 			
 			node_sec = node_sec.next_sibling( "substrate" ); 
 		}

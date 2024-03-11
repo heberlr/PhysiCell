@@ -284,7 +284,7 @@
 					</options>
 				</motility>
 				
-				<secretion>
+				<secretion model="default" description="model can be either 'default' or 'transmembrane_diffusion'">
 					<substrate name="substrate">
 						<secretion_rate units="1/min">0</secretion_rate>
 						<secretion_target units="substrate density">1</secretion_target>
