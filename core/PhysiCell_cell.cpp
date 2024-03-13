@@ -810,7 +810,8 @@ void Cell::turn_off_reactions(double dt)
 		phenotype.secretion.secretion_rates[i] = 0.0; 
 		phenotype.secretion.net_export_rates[i] = 0.0; 
 	}
-	set_internal_uptake_constants(dt);
+	// set_internal_uptake_constants(dt);
+	set_volume_is_changed(true);
 	
 	return; 
 }

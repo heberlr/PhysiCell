@@ -86,6 +86,10 @@ class Basic_Agent
 	std::vector<double> * net_export_rates; 
 	double get_total_volume();
 	void set_total_volume(double);
+	void set_volume_is_changed( bool new_value ){
+		volume_is_changed = new_value; 
+		return; 
+	}
 	void update_voxel_index();
 
 	/* new for internalized substrates in 1.5.0 */ 

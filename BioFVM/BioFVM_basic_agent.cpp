@@ -46,6 +46,9 @@
 #############################################################################
 */
 
+// #include <mutex>
+// std::mutex mtx;
+
 #include "BioFVM_basic_agent.h"
 #include "BioFVM_agent_container.h"
 #include "BioFVM_vector.h" 
@@ -175,8 +178,8 @@ void Basic_Agent::set_transmembrane_diffusion_constants( double dt )
 	// overall form: dI/dt = s*(E-I); dE/dt = s*(I-E) + e
 	// where I is the internal substrate concentration, E is the extracellular substrate concentration (in voxel), s is the diffusion (secretion) rate, and e is the net export rate
 	// use analytical solution to update concentrations (splitting up the diffusion and export components because that's what I solved for)
-	double voxel_coeff = volume / (volume + (microenvironment->voxels(current_voxel_index)).volume); // cell volume / (cell volume + voxel volume)
-	double cell_coeff = volume * (1 - voxel_coeff); // cell volume * (voxel volume / (cell volume + voxel volume))
+	double voxel_coeff = 1 / (volume + (microenvironment->voxels(current_voxel_index)).volume); // 1 / (cell volume + voxel volume)
+	double cell_coeff = (microenvironment->voxels(current_voxel_index)).volume * voxel_coeff; // (voxel volume / (cell volume + voxel volume))
 	double lambda2_base_dt = -dt*(1+volume/(microenvironment->voxels(current_voxel_index)).volume); // -dt * (1 + V_cell/V_voxel)
 
 	double exp_decay_term;
@@ -358,9 +361,9 @@ void Basic_Agent::simulate_secretion_and_uptake( Microenvironment* pS, double dt
 		*internalized_substrates -= total_extracellular_substrate_change; // opposite of net extracellular change 	
 	}
 	
-	(*pS)(current_voxel_index) += cell_source_sink_solver_temp1; 
-	(*pS)(current_voxel_index) /= cell_source_sink_solver_temp2; 
-	
+	(*pS)(current_voxel_index) += cell_source_sink_solver_temp1;
+	(*pS)(current_voxel_index) /= cell_source_sink_solver_temp2;
+
 	// now do net export 
 	(*pS)(current_voxel_index) += cell_source_sink_solver_temp_export2; 
 	if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true ) 
@@ -382,19 +385,27 @@ void Basic_Agent::simulate_transmembrane_diffusion( Microenvironment* pS, double
 		volume_is_changed = false;
 	}
 	
-	double conc_diff;
+	// double conc_diff;
+	double stuff_diff;
+	std::vector<double>& v = nearest_density_vector();
 	for (unsigned int i = 0; i < (*secretion_rates).size(); i++)
 	{
-		conc_diff = (*internalized_substrates)[i]/volume - nearest_density_vector()[i];
+		// conc_diff = (*internalized_substrates)[i]/volume - nearest_density_vector()[i];
+		stuff_diff = (*internalized_substrates)[i] - volume * v[i]; // this is the concentration difference times the cell volume; done to avoid division by cell volume, which could perhaps be (close to) zero
 		if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true )
 		{
-			(*internalized_substrates)[i] -= cell_source_sink_solver_temp1[i] * conc_diff;
+			// (*internalized_substrates)[i] -= cell_source_sink_solver_temp1[i] * conc_diff;
+			(*internalized_substrates)[i] -= cell_source_sink_solver_temp1[i] * stuff_diff;
 		}
-		(*pS)(current_voxel_index)[i] += cell_source_sink_solver_temp2[i] * conc_diff;
+		// (*pS)(current_voxel_index)[i] += cell_source_sink_solver_temp2[i] * conc_diff;
+		// mtx.lock(); // I think there is the danger of a data race...but I'm not sure how to fix it (or if it's even a problem) (I'm not sure if this would handle it anyway because when v is defined above, it could be changed before it's accessed in defining stuff_diff)
+		v[i] += cell_source_sink_solver_temp2[i] * stuff_diff;
+		v[i] += cell_source_sink_solver_temp_export2[i];
+		// mtx.unlock();
 	}
 
 	// now do net export 
-	(*pS)(current_voxel_index) += cell_source_sink_solver_temp_export2; 
+	// (*pS)(current_voxel_index) += cell_source_sink_solver_temp_export2; 
 	if( default_microenvironment_options.track_internalized_substrates_in_each_agent == true ) 
 	{
 		*internalized_substrates -= cell_source_sink_solver_temp_export1; 

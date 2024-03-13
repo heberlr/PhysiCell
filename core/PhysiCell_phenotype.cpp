@@ -962,7 +962,7 @@ bool Secretion::prepare_advancer(Basic_Agent* pCell, Phenotype& phenotype , doub
 		pCell->net_export_rates = &net_export_rates; 
 		
 		pCell->set_total_volume( phenotype.volume.total ); 
-		pCell->set_internal_uptake_constants( dt );
+		// pCell->set_internal_uptake_constants( dt );
 	}
 	return true;
 }
