@@ -369,7 +369,7 @@ void Cell::advance_bundled_phenotype_functions( double dt_ )
 		functions.update_migration_bias = NULL;
 		
 		// turn off secretion, and reduce uptake by a factor of 10 
-		phenotype.secretion.set_all_secretion_to_zero();
+		// phenotype.secretion.set_all_secretion_to_zero();
 		phenotype.secretion.scale_all_uptake_by_factor( 0.10 );
 		
 		// make sure to run the death entry function 
