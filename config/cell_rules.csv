@@ -1,0 +1,3 @@
+cancer,pressure,decreases,cycle entry,0,1,4,0
+cancer,custom:drug1_damage,increases,apoptosis,0.00531667,0.5,4,0
+cancer,custom:drug1_damage,decreases,exit from cycle phase 3,0.008333,0.5,4,0
