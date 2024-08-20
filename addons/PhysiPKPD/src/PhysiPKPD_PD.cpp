@@ -126,7 +126,16 @@ Pharmacodynamics_Model *create_pd_model(int cell_definition_index, std::string c
     {
         std::cout << "PhysiPKPD WARNING: No PD time step supplied for " << substrate_name << " effects on " << cell_definition_name << std::endl
                   << "\tWill use the mechanics_dt by default." << std::endl
-                  << "\tSpecify one using " << substrate_name + "_dt_" + cell_definition_name << std::endl
+                  << "\tSpecify one using the dt node within this substrate element:" << std::endl
+                  << "  <cell_definition name=\"" << cell_definition_name << "\" ID=\"" << cell_definition_index << "\">" << std::endl
+                  << "  ..." << std::endl
+                  << "    <PD>" << std::endl
+                  << "      <substrate name=\"" << substrate_name << "\">" << std::endl
+                  << "        ..." << std::endl
+                  << "        <dt>0.1</dt>" << std::endl
+                  << "      </substrate>" << std::endl
+                  << "    </PD>" << std::endl
+                  << "  </cell_definition>" << std::endl
                   << std::endl;
 
         pNew->dt = mechanics_dt;
@@ -200,85 +209,9 @@ void setup_pharmacodynamics()
             default_microenvironment_options.track_internalized_substrates_in_each_agent = true; // ensure that internalized substrates are being tracked
             all_pd.push_back(create_pd_model(cd_ind, cd_name, substrate_node));
 
-
             substrate_node = substrate_node.next_sibling("substrate");
         }
     }
-
-    /*
-    std::string s;
-    std::string delimiter = ",";
-    size_t pos = 0;
-    std::string token;
-
-    if (parameters.strings.find_index("PKPD_pd_substrate_names") == -1)
-    {
-        std::cout << "PhysiPKPD WARNING: PKPD_pd_substrate_names was not found in User Parameters." << std::endl
-                  << "\tWill assume no PD substrates." << std::endl;
-        s = "";
-    }
-    else
-    {
-        s = parameters.strings("PKPD_pd_substrate_names");
-    }
-
-    // Get density index for all listed PD substrates
-    while ((pos = s.find(delimiter)) != std::string::npos)
-    {
-        token = s.substr(0, pos);
-        if (microenvironment.find_density_index(token) != -1)
-        {
-            PD_names.push_back(token);
-            PD_ind.push_back(microenvironment.find_density_index(token));
-        }
-        else
-        {
-            std::cout << "PhysiPKPD WARNING: " << token << " is not a substrate in the microenvironment." << std::endl;
-        }
-        s.erase(0, pos + 1);
-    }
-    if (s.size() > 0 && microenvironment.find_density_index(s) != -1)
-    {
-        PD_names.push_back(s);
-        PD_ind.push_back(microenvironment.find_density_index(s));
-    }
-    else if (s.size() > 0)
-    {
-        std::cout << "PhysiPKPD WARNING: " << s << " is not a substrate in the microenvironment." << std::endl;
-    }
-    */
-    
-    /*
-    // add the necessary custom variables to all cells
-    for (int n = 0; n < PD_ind.size(); n++) // loop over all identified PD substrates
-    {
-        for (int cd_ind = 0; cd_ind < cell_definitions_by_index.size(); cd_ind++) // loop over all cell definitions
-        {
-            bool is_type_affected_by_drug = false;
-            Cell_Definition* pCD = cell_definitions_by_index[cd_ind];
-            Hypothesis_Ruleset* pHRS = find_ruleset(pCD);
-            for (int rule_ind = 0; rule_ind < pHRS->rules.size(); rule_ind++) // loop over all rules for this cell definition
-            {
-                Hypothesis_Rule HR = pHRS->rules[rule_ind];
-                for (int sig_ind = 0; sig_ind < HR.signals.size(); sig_ind++) // loop over all signals looking for this PD substrate
-                {
-                    std::string signal = HR.signals[sig_ind];
-                    if (signal=="custom:" + PD_names[n] + "_damage")
-                    {
-                        default_microenvironment_options.track_internalized_substrates_in_each_agent = true; // ensure that internalized substrates are being tracked
-                        is_type_affected_by_drug = true;
-                        all_pd.push_back(create_pd_model(PD_ind[n], PD_names[n], cd_ind, pCD->name));
-                        break;
-                    }
-                }
-                if (is_type_affected_by_drug==true)
-                {
-                    break;
-                }
-            }
-        }
-    } // finish looping over all identified PD substrates
-    */
     return;
 }
 
@@ -356,47 +289,6 @@ void setup_pd_model_auc(Pharmacodynamics_Model *pPD, pugi::xml_node substrate_no
 
     Cell_Definition *pCD = cell_definitions_by_index[pPD->cell_definition_index];
 
-    /*
-    // add backwards compatibility for usinge PKPD_D1_repair_rate to mean the constant repair rate
-    if (pCD->custom_data.find_variable_index(pPD->substrate_name + "_repair_rate") != -1) // possibly using the previous repair model and parameter syntax
-    {
-        if (pCD->custom_data.find_variable_index(pPD->substrate_name + "_repair_rate_constant") == -1)
-        {
-            pCD->custom_data.add_variable(pPD->substrate_name + "_repair_rate_constant", "damage/min", pCD->custom_data[pPD->substrate_name + "_repair_rate"]); // use the repair rate
-        }
-        if (pCD->custom_data.find_variable_index(pPD->substrate_name + "_repair_rate_linear") == -1)
-        {
-            pCD->custom_data.add_variable(pPD->substrate_name + "_repair_rate_linear", "1/min", 0.0);
-        }
-    }
-    */
-
-    /*
-    // make sure that all the necessary intracellular dynamics are present
-    std::vector<std::string> necessary_custom_fields;
-    necessary_custom_fields.push_back(pPD->substrate_name + "_metabolism_rate");
-    necessary_custom_fields.push_back(pPD->substrate_name + "_repair_rate_constant");
-    necessary_custom_fields.push_back(pPD->substrate_name + "_repair_rate_linear");
-    for (int i = 0; i < necessary_custom_fields.size(); i++)
-    {
-        if (pCD->custom_data.find_variable_index(necessary_custom_fields[i]) == -1)
-        {
-            std::cout << "PhysiPKPD WARNING: " << pCD->name << " does not have " << necessary_custom_fields[i] << " in custom_data" << std::endl
-                      << "\tSetting to 0 by default." << std::endl
-                      << std::endl;
-            pCD->custom_data.add_variable(necessary_custom_fields[i], 0.0);
-#pragma omp parallel for
-            for (int j = 0; j < (*all_cells).size(); j++) // loop over all cells to see if they have a type that got moas added to their custom_data
-            {
-                if ((*all_cells)[j]->type == pPD->cell_definition_index)
-                {
-                    (*all_cells)[j]->custom_data.add_variable(necessary_custom_fields[i], 0.0);
-                }
-            }
-        }
-    }
-    */
-
     if (pPD->use_precomputed_quantities) // setup precomputed quanities (if not using precomputed quantities, there is currently nothing to set up)
     {
         if (fabs(round(pPD->dt / diffusion_dt) - pPD->dt / diffusion_dt) > 0.0001)
@@ -407,28 +299,40 @@ void setup_pd_model_auc(Pharmacodynamics_Model *pPD, pugi::xml_node substrate_no
                       << std::endl;
             exit(-1);
         }
+        double metabolism_rate = substrate_node.child("metabolism_rate").text().as_double();
+        double linear_repair_rate = substrate_node.child("linear_repair_rate").text().as_double();
+        double constant_repair_rate = substrate_node.child("constant_repair_rate").text().as_double();
 
         // internalized drug amount (or concentration) simply decreases as A(dt) = A0 * exp(-metabolism_rate * dt);
-        pPD->metabolism_reduction_factor = exp(-substrate_node.child("metabolism_rate").text().as_double() * pPD->dt);
+        pPD->metabolism_reduction_factor = exp(-metabolism_rate * pPD->dt);
 
-        // Damage (D) follows D' = A - linear_rate * D - constant_rate ==> D(dt) = d_00 + d_10 * A0 + d_01 * D0; defining d_00, d_10, and d_01 here
-        pPD->initial_damage_coefficient = exp(-substrate_node.child("linear_repair_rate").text().as_double() * pPD->dt); // d_01
-
-        pPD->damage_constant = substrate_node.child("constant_repair_rate").text().as_double();
-        pPD->damage_constant /= substrate_node.child("linear_repair_rate").text().as_double();
-        pPD->damage_constant *= pPD->initial_damage_coefficient - 1; // d_00
-
-        // if the metabolism and repair rates are equal, then the system has repeated eigenvalues and the analytic solution is qualitatively different; notice the division by the difference of these rates in the first case
-        if (substrate_node.child("metabolism_rate").text().as_double() != substrate_node.child("linear_repair_rate").text().as_double())
+        if (linear_repair_rate == 0)
         {
-            pPD->initial_substrate_coefficient = pPD->metabolism_reduction_factor;
-            pPD->initial_substrate_coefficient -= pPD->initial_damage_coefficient; // d_10
-            pPD->initial_substrate_coefficient /= substrate_node.child("linear_repair_rate").text().as_double() - substrate_node.child("metabolism_rate").text().as_double(); // this would be bad if these rates were equal!
+            // Damage (D) follows D' = A - constant_rate ==> D(dt) = d_00 + d_10 * A0 + 1 * D0; defining d_00 and d_01 here
+            pPD->damage_constant = -constant_repair_rate * pPD->dt; // d_00
+            pPD->initial_substrate_coefficient = (1 - exp(-metabolism_rate * pPD->dt)) / metabolism_rate; // d_10
+            pPD->initial_damage_coefficient = 1.0; // d_01
         }
         else
         {
-            pPD->initial_substrate_coefficient = pPD->dt;
-            pPD->initial_substrate_coefficient *= pPD->initial_damage_coefficient; // d_10
+            // Damage (D) follows D' = A - linear_rate * D - constant_rate ==> D(dt) = d_00 + d_10 * A0 + d_01 * D0; defining d_00, d_10, and d_01 here
+            pPD->initial_damage_coefficient = exp(-linear_repair_rate * pPD->dt); // d_01
+
+            pPD->damage_constant = constant_repair_rate;
+            pPD->damage_constant /= linear_repair_rate;
+            pPD->damage_constant *= pPD->initial_damage_coefficient - 1; // d_00
+
+            // if the metabolism and repair rates are equal, then the system has repeated eigenvalues and the analytic solution is qualitatively different; notice the division by the difference of these rates in the first case
+            if (metabolism_rate != linear_repair_rate)
+            {
+                pPD->initial_substrate_coefficient = pPD->metabolism_reduction_factor;
+                pPD->initial_substrate_coefficient -= pPD->initial_damage_coefficient;                                                                                            // d_10
+                pPD->initial_substrate_coefficient /= linear_repair_rate - metabolism_rate; // this would be bad if these rates were equal!
+            }
+            else
+            {
+                pPD->initial_substrate_coefficient = pPD->initial_damage_coefficient * pPD->dt; // d_10
+            }
         }
     }
 }
@@ -464,32 +368,6 @@ void single_pd_model(Pharmacodynamics_Model *pPD, double current_time)
                               << "\tWe anticipate the main reason to not use precomputation is for heterogeneity of PD parameters within a cell_definition." << std::endl
                               << "\tWe need to discuss how best to move PD parameters into custom_data for this to work, we think." << std::endl;
                     exit(-1);
-                    /*
-                    double metabolism_reduction_factor = exp(-pC->custom_data[pPD->substrate_name + "_metabolism_rate"] * dt);
-                    double initial_damage_coefficient = exp(-pC->custom_data[pPD->substrate_name + "_repair_rate_linear"] * dt);
-                    double damage_constant = pC->custom_data[pPD->substrate_name + "_repair_rate_constant"] / pC->custom_data[pPD->substrate_name + "_repair_rate_linear"] * (initial_damage_coefficient - 1); // +d_00...
-                    double initial_substrate_coefficient;
-                    if (pC->custom_data[pPD->substrate_name + "_metabolism_rate"] != pC->custom_data[pPD->substrate_name + "_repair_rate_linear"]) // +d_10*A0 (but the analytic form depends on whether the repair and metabolism rates are equal)
-                    {
-                        initial_substrate_coefficient = (metabolism_reduction_factor - initial_damage_coefficient) / (pC->custom_data[pPD->substrate_name + "_repair_rate_linear"] - pC->custom_data[pPD->substrate_name + "_metabolism_rate"]);
-                    }
-                    else
-                    {
-                        initial_substrate_coefficient = dt * metabolism_reduction_factor;
-                    }
-                    if (!pPD->use_internalized_amount)
-                    {
-                        initial_substrate_coefficient /= pC->phenotype.volume.total; // use concentration of internalized substrate to cause damage rather than internalized amount
-                    }
-                    pC->custom_data[pPD->damage_index] *= initial_damage_coefficient;                                                                 // D(dt) = d_01 * D(0)...
-                    pC->custom_data[pPD->damage_index] += damage_constant;                                                                            // + d_00 ...
-                    pC->custom_data[pPD->damage_index] += initial_substrate_coefficient * p.molecular.internalized_total_substrates[pPD->substrate_index]; // + d_10*A(0) or + d_10*C(0) if using concentration
-                    if (pC->custom_data[pPD->damage_index] <= 0)
-                    {
-                        pC->custom_data[pPD->damage_index] = 0; // very likely that cells will end up with negative damage without this because the repair rate is assumed constant (not proportional to amount of damage)
-                    }
-                    p.molecular.internalized_total_substrates[pPD->substrate_index] *= metabolism_reduction_factor;
-                    */
                 }
                 else
                 {
@@ -534,26 +412,6 @@ void intialize_damage_coloring(int nCD, std::vector<std::vector<int>> &default_c
             {
                 continue;
             }
-            // Coment because of fix for the rulesets making them a vector of pointers rather than a vector of rules - (Daniel commented) - Heber 2024-08-07
-            // Hypothesis_Ruleset *pHRS = find_ruleset(pCD);
-            // for (int rule_ind = 0; rule_ind < pHRS->rules.size(); rule_ind++) // loop over all rules for this cell definition
-            // {
-            //     Hypothesis_Rule HR = pHRS->rules[rule_ind];
-            //     for (int sig_ind = 0; sig_ind < HR.signals.size(); sig_ind++) // loop over all signals looking for this PD substrate
-            //     {
-            //         if (k >= 2)
-            //         {
-            //             break;
-            //         }
-            //         if (HR.signals[sig_ind] == "custom:" + PD_names[n] + "_damage")
-            //         {
-            //             damage_inds[i].push_back(find_cell_definition(i)->custom_data.find_variable_index(all_pd[n]->substrate_name + "_damage"));
-            //             ec50_vals[i].push_back(HR.half_maxes[sig_ind]);
-            //             hp_vals[i].push_back(HR.hill_powers[sig_ind]);
-            //             k++;
-            //         }
-            //     }
-            // }
             Hypothesis_Ruleset *pHRS = find_ruleset(pCD);
             for (int rule_ind = 0; rule_ind < pHRS->rules.size(); rule_ind++) // loop over all rules for this cell definition
             {
