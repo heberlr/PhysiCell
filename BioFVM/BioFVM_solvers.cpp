@@ -93,6 +93,18 @@ void diffusion_decay_solver__constant_coefficients_explicit_uniform_mesh( Microe
 	return; 
 }
 
+void empty_diffusion_solver( Microenvironment& S, double dt )
+{
+	static bool setup_done = false; 
+	if( !setup_done )
+	{
+		std::cout << "Using the empty diffusion solver ... " << std::endl; 
+		setup_done = true; 
+	}
+
+	return; 
+}
+
 void diffusion_decay_solver__constant_coefficients_LOD_3D( Microenvironment& M, double dt )
 {
 	if( M.mesh.regular_mesh == false || M.mesh.Cartesian_mesh == false )
