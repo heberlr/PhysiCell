@@ -3,6 +3,7 @@
 .DS_Store
 Makefile-backup
 config/PhysiCell_settings-backup.xml
+config/PhysiCell_settings_*.xml
 documentation/.DS_Store
 unit_tests/.DS_Store
 sample_projects/.DS_Store
@@ -19,6 +20,7 @@ heterogeneity
 cancer_immune_3D
 biorobots
 project
+pancreatic
 initial.svg
 initial.svg
 interaction_demo
