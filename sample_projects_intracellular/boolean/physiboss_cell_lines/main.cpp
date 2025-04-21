@@ -108,9 +108,6 @@ int main( int argc, char* argv[] )
 	// OpenMP setup
 	omp_set_num_threads(PhysiCell_settings.omp_num_threads);
 	
-	// PNRG setup 
-	SeedRandom(); 
-	
 	// time setup 
 	std::string time_units = "min"; 
 
@@ -149,9 +146,6 @@ int main( int argc, char* argv[] )
 	
 	save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
 	
-	sprintf( filename , "%s/states_initial.csv", PhysiCell_settings.folder.c_str());
-	MaBoSSIntracellular::save( filename, *PhysiCell::all_cells);
-	
 	// save a quick SVG cross section through z = 0, after setting its 
 	// length bar to 200 microns 
 
@@ -166,6 +160,8 @@ int main( int argc, char* argv[] )
 	
 	sprintf( filename , "%s/legend.svg" , PhysiCell_settings.folder.c_str() ); 
 	create_plot_legend( filename , cell_coloring_function ); 
+	
+	add_software_citation( "PhysiBoSS" , PhysiBoSS_Version , PhysiBoSS_DOI, PhysiBoSS_URL); 
 	
 	display_citations(); 
 	
@@ -190,7 +186,7 @@ int main( int argc, char* argv[] )
 		while( PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1*diffusion_dt )
 		{
 			// save data if it's time. 
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_full_save_time ) < 0.01 * diffusion_dt )
+			if( PhysiCell_globals.current_time > PhysiCell_globals.next_full_save_time - 0.5 * diffusion_dt )
 			{
 				display_simulation_status( std::cout ); 
 				if( PhysiCell_settings.enable_legacy_saves == true )
@@ -203,11 +199,6 @@ int main( int argc, char* argv[] )
 					sprintf( filename , "%s/output%08u" , PhysiCell_settings.folder.c_str(),  PhysiCell_globals.full_output_index ); 
 					
 					save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
-					
-					sprintf( filename , "%s/states_%08u.csv", PhysiCell_settings.folder.c_str(), PhysiCell_globals.full_output_index);
-					
-					MaBoSSIntracellular::save( filename, *PhysiCell::all_cells );
-	
 				}
 				
 				PhysiCell_globals.full_output_index++; 
@@ -215,7 +206,7 @@ int main( int argc, char* argv[] )
 			}
 			
 			// save SVG plot if it's time
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_SVG_save_time  ) < 0.01 * diffusion_dt )
+			if( PhysiCell_globals.current_time > PhysiCell_globals.next_SVG_save_time - 0.5 * diffusion_dt )
 			{
 				if( PhysiCell_settings.enable_SVG_saves == true )
 				{	
@@ -259,13 +250,9 @@ int main( int argc, char* argv[] )
 	sprintf( filename , "%s/final" , PhysiCell_settings.folder.c_str() ); 
 	save_PhysiCell_to_MultiCellDS_v2( filename , microenvironment , PhysiCell_globals.current_time ); 
 	
-	sprintf( filename , "%s/states_final.csv", PhysiCell_settings.folder.c_str());
-	MaBoSSIntracellular::save( filename, *PhysiCell::all_cells );
-	
 	sprintf( filename , "%s/final.svg" , PhysiCell_settings.folder.c_str() ); 
 	SVG_plot( filename , microenvironment, 0.0 , PhysiCell_globals.current_time, cell_coloring_function );
 
-	
 	// timer 
 	
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 

@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2022, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2025, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -78,9 +78,26 @@ thread_local bool local_pnrg_setup_done = false;
 unsigned int physicell_random_seed = 0; 
 std::vector<unsigned int> physicell_random_seeds; 
 
-void SeedRandom( unsigned int input )
-{ 
-	physicell_random_seed = input;
+void setup_rng( void )
+{
+	static bool setup_done = false;
+	static bool warned = false;
+	if (!warned && setup_done)
+	{
+		std::cout << "WARNING: Setting the random seed again." << std::endl
+				  << "\tYou probably have set a user parameter called random_seed." << std::endl
+				  << "\tHere, we will use the random seed set in user parameters." << std::endl	
+				  << "\tHOWEVER, as of PhysiCell 1.14.0, you should set the random seed in the <options><random_seed> element in the config file." << std::endl
+				  << "\tFuture versions of PhysiCell may throw an error here. Kindly remove the user parameter and just use the <options><random_seed> element." << std::endl;
+		warned = true;
+	}
+	std::cout << "Setting up RNG with seed " << physicell_random_seed << std::endl;
+
+	// save the seed to random_seed.txt
+	std::ofstream out(PhysiCell_settings.folder + "/random_seed.txt");
+	out << physicell_random_seed << std::endl;
+	out.close();
+
 	physicell_PRNG_generator.seed( physicell_random_seed );
 
 	// now get number of threads and set up a seed for each thread 
@@ -107,39 +124,20 @@ void SeedRandom( unsigned int input )
 	for( int i=1; i < num_threads ; i++ )
 	{ physicell_random_seeds[i] = seeds[i]; }
 
+	setup_done = true;
 	return; 
+}
+
+void SeedRandom( unsigned int input )
+{ 
+	physicell_random_seed = input;
+	return setup_rng();
 }
 
 void SeedRandom( void )
 { 
 	physicell_random_seed = std::chrono::system_clock::now().time_since_epoch().count();
-	physicell_PRNG_generator.seed( physicell_random_seed );
-
-	// now get number of threads and set up a seed for each thread 
-	int num_threads = PhysiCell_settings.omp_num_threads; 
-	physicell_random_seeds.resize( num_threads, 0 ); 
-
-	// use std::seed_seq to create a sequence of seeds 
-	// first, use the base seed 
-	std::vector<unsigned int> initial_sequence( num_threads , 0 ); 
-	// int* initial_sequence; 
-	// initial_sequence = new int [num_threads]; 
-	for( int i=0; i < num_threads ; i++ )
-	{ initial_sequence[i] = physicell_random_seed+i; } 
-	
-	// now we use std::seed_seq 
-	std::seed_seq seq(initial_sequence.begin() , initial_sequence.end() ); 
-
-	// now we call the generator 
-    std::vector<std::uint32_t> seeds(num_threads);
-    seq.generate(seeds.begin(), seeds.end());
-
-	// now transfer these into the seeds for each thread 
-	physicell_random_seeds[0] = physicell_random_seed; 
-	for( int i=1; i < num_threads ; i++ )
-	{ physicell_random_seeds[i] = seeds[i]; }
-
-	return; 
+	return setup_rng();
 }
 
 double UniformRandom_old_not_thread_safe()
@@ -365,6 +363,26 @@ int choose_event( std::vector<double>& probabilities )
 	}
 	
 	return probabilities.size(); 
+}
+
+void copy_file_to_output(std::string filename)
+{
+	std::cout << "Copying " << filename << " to output folder." << std::endl;
+	// copy the file to the output folder
+	std::string basename = filename;
+	size_t found = basename.find_last_of("/"); // find the end of the path
+	if (found != std::string::npos)
+	{
+		basename = basename.substr(found + 1);
+	}
+
+	std::string output_filename = PhysiCell_settings.folder + "/" + basename;
+
+	// copy filename to output_filename
+	char copy_command[1024];
+	sprintf(copy_command, "cp %s %s", filename.c_str(), output_filename.c_str());
+	std::cout << "Copy command: " << copy_command << std::endl;
+	(void)system(copy_command); // make it explicit that we are ignoring the return value
 }
 
 };

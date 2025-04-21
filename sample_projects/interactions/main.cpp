@@ -151,7 +151,7 @@ int main( int argc, char* argv[] )
 	
 	std::vector<std::string> (*cell_coloring_function)(Cell*) = my_coloring_function; 
 
-	std::vector<std::string> (*substrate_coloring_function)(double, double, double) = my_coloring_function_for_substrate; 
+	std::string (*substrate_coloring_function)(double, double, double) = my_coloring_function_for_substrate; 
 	
 	sprintf( filename , "%s/initial.svg" , PhysiCell_settings.folder.c_str() ); 
 
@@ -183,7 +183,7 @@ int main( int argc, char* argv[] )
 		while( PhysiCell_globals.current_time < PhysiCell_settings.max_time + 0.1*diffusion_dt )
 		{
 			// save data if it's time. 
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_full_save_time ) < 0.01 * diffusion_dt )
+			if( PhysiCell_globals.current_time > PhysiCell_globals.next_full_save_time - 0.5 * diffusion_dt )
 			{
 				display_simulation_status( std::cout ); 
 				if( PhysiCell_settings.enable_legacy_saves == true )
@@ -203,7 +203,7 @@ int main( int argc, char* argv[] )
 			}
 			
 			// save SVG plot if it's time
-			if( fabs( PhysiCell_globals.current_time - PhysiCell_globals.next_SVG_save_time  ) < 0.01 * diffusion_dt )
+			if( PhysiCell_globals.current_time > PhysiCell_globals.next_SVG_save_time - 0.5 * diffusion_dt )
 			{
 				if( PhysiCell_settings.enable_SVG_saves == true )
 				{	

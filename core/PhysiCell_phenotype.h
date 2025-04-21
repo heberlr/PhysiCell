@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2022, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2025, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -213,6 +213,23 @@ class Cycle_Model
 	std::ostream& display( std::ostream& os ); // done 
 };
 
+class Asymmetric_Division
+{
+private:
+public:
+	// rates of asymmetric division into different cell types 
+	std::vector<double> asymmetric_division_probabilities; 
+
+	// initialization
+	Asymmetric_Division(); // done 
+	void sync_to_cell_definitions(); // done 
+
+	double probabilities_total();
+
+	// ease of access 
+	double& asymmetric_division_probability( std::string type_name ); // done
+};
+
 class Cycle
 {
  private:
@@ -230,6 +247,8 @@ class Cycle
 	int& current_phase_index( void ); // done 
 	
 	void sync_to_cycle_model( Cycle_Model& cm ); // done 
+
+	Asymmetric_Division asymmetric_division;
 };
 
 class Death_Parameters
@@ -510,6 +529,8 @@ class Cell_Functions
 	
 	void (*contact_function)(Cell* pMyself, Phenotype& my_phenotype, 
 		Cell* pOther, Phenotype& other_phenotype, double dt ); 
+
+    void (*cell_division_function)(Cell* pCell1, Cell* pCell2 );
 		
 	/* prototyping / beta in 1.5.0 */ 
 /*	
@@ -671,7 +692,14 @@ class Cell_Interactions
  private:
  public: 
 	// phagocytosis parameters (e.g., macrophages)
-	double dead_phagocytosis_rate; 
+	// generic dead phagocytosis rate
+	// double dead_phagocytosis_rate; // deprecated 
+
+	// specific dead phagocytosis rates
+	double apoptotic_phagocytosis_rate;
+	double necrotic_phagocytosis_rate;
+	double other_dead_phagocytosis_rate; 
+
 	std::vector<double> live_phagocytosis_rates; 
 	// attack parameters (e.g., T cells)
 
@@ -681,7 +709,13 @@ class Cell_Interactions
 	std::vector<double> immunogenicities; // new! 
 		// how immnogenic am I to cell type j? 
 
-	double damage_rate;  
+	double attack_damage_rate;  
+
+	Cell* pAttackTarget; 
+	double total_damage_delivered; 
+
+	double attack_duration; 
+
 	// cell fusion parameters 
 	std::vector<double> fusion_rates;
 	
@@ -718,7 +752,7 @@ class Cell_Transformations
 };
 
 // pre-beta functionality in 1.10.3 
-class Integrity
+class Cell_Integrity
 {
  private:
  public: 
@@ -727,6 +761,8 @@ class Integrity
 	double damage_rate; 
 	double damage_repair_rate; 
 
+
+/*
 	// lipid damage (e.g, cell membrane, organelles)
 	double lipid_damage; 
 	double lipid_damage_rate; 
@@ -739,10 +775,11 @@ class Integrity
 
 	// other damages?
 	// mitochondrial? spindle? other? 
+*/	
 
-	Integrity(); 
+	Cell_Integrity(); 
 
-	void advance_damage_models( double dt ); 
+	void advance_damage( double dt ); 
 };
 
 class Phenotype
@@ -761,6 +798,8 @@ class Phenotype
 	Secretion secretion; 
 	
 	Molecular molecular; 
+
+	Cell_Integrity cell_integrity; 
 
     // We need it to be a pointer to allow polymorphism
 	// then this object could be a MaBoSSIntracellular, or a RoadRunnerIntracellular

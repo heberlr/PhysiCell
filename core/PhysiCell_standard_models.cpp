@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2022, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2025, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -779,6 +779,7 @@ void initialize_default_cell_definition( void )
 	//					these for the cell_defaults 
 	cell_defaults.phenotype.cell_interactions.sync_to_cell_definitions(); 
 	cell_defaults.phenotype.cell_transformations.sync_to_cell_definitions(); 
+	cell_defaults.phenotype.cycle.asymmetric_division.sync_to_cell_definitions();
 	cell_defaults.phenotype.motility.sync_to_current_microenvironment(); 
 	cell_defaults.phenotype.mechanics.sync_to_cell_definitions(); 
 	
@@ -1208,10 +1209,38 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 		
 		if( pTarget->phenotype.death.dead == true )
 		{
-			// dead phagocytosis 
-			probability = phenotype.cell_interactions.dead_phagocytosis_rate * dt; 
-			if( UniformRandom() < probability ) 
-			{ pCell->ingest_cell(pTarget); } 
+			// ADD SPECIFIC PHAGOCYTOSIS HERE JUNE 2024 
+
+			bool apoptotic = (bool) get_single_signal( pTarget , "apoptotic" ); 
+			bool necrotic = (bool) get_single_signal( pTarget , "necrotic" ); 
+			bool other = !(apoptotic || necrotic); // neither apoptotic nor necrotic 
+
+			// apoptotic phagocytosis 
+			probability = phenotype.cell_interactions.apoptotic_phagocytosis_rate * dt; 
+			if( UniformRandom() < probability && phagocytosed == false && apoptotic == true ) // add the prior phago check in July 2024  
+			{
+				pCell->ingest_cell(pTarget); 
+				phagocytosed = true; // was missing : bugfix 
+				// std::cout << "chomp apop " << PhysiCell_globals.current_time << " " << probability <<  std::endl;
+			} 
+
+			// necrotic phagocytosis 
+			probability = phenotype.cell_interactions.necrotic_phagocytosis_rate * dt; 
+			if( UniformRandom() < probability && phagocytosed == false && necrotic == true ) // add the prior phago check in July 2024  
+			{
+				pCell->ingest_cell(pTarget); 
+				phagocytosed = true; // was missing : bugfix 
+				// std::cout << "chomp necro " << PhysiCell_globals.current_time << " " << probability <<  std::endl;
+			} 
+
+			// other dead phagocytosis 
+			probability = phenotype.cell_interactions.other_dead_phagocytosis_rate * dt; 
+			if( UniformRandom() < probability && other == true && phagocytosed == false )  
+			{
+				pCell->ingest_cell(pTarget); 
+				phagocytosed = true; // was missing : bugfix 
+				// std::cout << "chomp other " << PhysiCell_globals.current_time << " " << probability <<  std::endl;
+			} 
 		}
 		else
 		{
@@ -1231,13 +1260,49 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 			double attack_ij = phenotype.cell_interactions.attack_rate(type_name); 
 			double immunogenicity_ji = pTarget->phenotype.cell_interactions.immunogenicity(pCell->type_name); 
 
+			// probability of STARTING an attack 
 			probability = attack_ij * immunogenicity_ji * dt; 
-			
-			if( UniformRandom() < probability && attacked == false ) 
+			if( attacked == false && pCell->phenotype.cell_interactions.pAttackTarget == NULL )
 			{
-				pCell->attack_cell(pTarget,dt); 
-				attacked = true;
+				if( UniformRandom() < probability ) 
+				{				
+					pCell->phenotype.cell_interactions.pAttackTarget = pTarget; 
+					attacked = true; 
+					/*					
+					std::cout << "*********   *********  ********  start atack **** " << PhysiCell_globals.current_time << std::endl; 
+					std::cout 
+					<< "attack duration: " << pCell->phenotype.cell_interactions.attack_duration << " "  
+					<< "attack damage rate: " << pCell->phenotype.cell_interactions.attack_damage_rate <<  std::endl; 
+					*/
+					// spring-link these cells 
+					attach_cells_as_spring(pCell,pTarget); 
+				} 
+			}
+
+/*
+			// perform attack. be careful to not overcount it! 
+			// make sure that (1) I have a non-null pAttackTarget, and that (2) we are talking about pTarget 
+			// easiest way to do this is to check if the pAttackTarget = pTarget. IF pAttackTarget = NULL, it 
+			// won't be true. If pAttackTarget is non-null, but we're looking ata different cell, also not true. 
+			// if pAttackTarget = pTarget, then we're "looking" at the right cell, so do the attack. 
+			if( pCell->phenotype.cell_interactions.pAttackTarget == pTarget ) 
+			{
+				pCell->attack_cell(pCell->phenotype.cell_interactions.pAttackTarget,dt); 
+				attacked = true; // attacked at least one cell in this time step 
+
+				// probability of ending attack 
+				// end attack if target is dead 
+				probability = dt / (1e-15 + pCell->phenotype.cell_interactions.attack_duration); 
+
+				if( UniformRandom() < probability || pCell->phenotype.cell_interactions.pAttackTarget->phenotype.death.dead ) 
+				{
+					std::cout << "*********   *********  ********  attack done **** " << probability << " " << 
+					pCell->phenotype.cell_interactions.pAttackTarget->state.total_attack_time << " " 		
+					<< (int) pCell->phenotype.cell_interactions.pAttackTarget->phenotype.death.dead << std::endl; 
+					pCell->phenotype.cell_interactions.pAttackTarget = NULL; 
+				} 
 			} 
+*/
 			
 			// fusion 
 			// assume you can only fuse once cell at a time 
@@ -1248,7 +1313,45 @@ void standard_cell_cell_interactions( Cell* pCell, Phenotype& phenotype, double 
 				fused = true; 
 			} 
 		}
-	}	
+	}
+
+	// move effector attack here. 
+
+		if( pCell->phenotype.cell_interactions.pAttackTarget != NULL ) 
+		{
+			Cell* pTarget = pCell->phenotype.cell_interactions.pAttackTarget; 
+
+			pCell->attack_cell(pTarget,dt); 
+			attacked = true; // attacked at least one cell in this time step 
+
+			// attack_cell
+
+			// probability of ending attack 
+			// end attack if target is dead 
+			probability = dt / (1e-15 + pCell->phenotype.cell_interactions.attack_duration); 
+
+
+			if( UniformRandom() < probability || pTarget->phenotype.death.dead ) 
+			{
+				/*
+				std::cout << "*********   *********  ********  attack done **** " << PhysiCell_globals.current_time << " " 
+				<< probability << " "
+				<< "attack time: " << pTarget->state.total_attack_time << " " 		
+				<< "damage: " << pTarget->phenotype.cell_integrity.damage <<  " " 		
+				<< "dead? " << (int) pTarget->phenotype.death.dead << " " 
+				<< "damage delivered: " << pCell->phenotype.cell_interactions.total_damage_delivered << std::endl; 
+				*/
+
+				detach_cells_as_spring(pCell,pTarget); 
+
+				pCell->phenotype.cell_interactions.pAttackTarget = NULL; 
+			} 
+		} 
+
+
+	// move decision if to end attack here. 
+
+
 }
 
 void standard_cell_transformations( Cell* pCell, Phenotype& phenotype, double dt )
@@ -1267,8 +1370,54 @@ void standard_cell_transformations( Cell* pCell, Phenotype& phenotype, double dt
 			return; 
 		} 
 	}
-	
+
 }
+
+void standard_asymmetric_division_function( Cell* pCell_parent, Cell* pCell_daughter )
+{
+	Cell_Definition* pCD_parent = cell_definitions_by_name[pCell_parent->type_name];
+	double total = pCell_parent->phenotype.cycle.asymmetric_division.probabilities_total();
+	if (total > 1.0)
+	{
+		double sym_div_prob = pCell_parent->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities[pCell_parent->type] + 1.0 - total;
+		if (sym_div_prob < 0.0)
+		{ 
+			throw std::runtime_error("Error: Asymmetric division probabilities for " + pCD_parent->name + " sum to greater than 1.0 and cannot be normalized.");
+		}
+		pCell_parent->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities[pCell_parent->type] = sym_div_prob;
+		pCell_daughter->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities[pCell_daughter->type] = sym_div_prob;
+	}
+	double r = UniformRandom();
+	for( int i=0; i < pCD_parent->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities.size(); i++ )
+	{
+		if( r <= pCell_parent->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities[i] )
+		{
+			if (i != pCell_daughter->type) // only convert if the daughter is not already the correct type
+			{ pCell_daughter->convert_to_cell_definition( *cell_definitions_by_index[i] ); }
+			return;
+		}
+		r -= pCell_parent->phenotype.cycle.asymmetric_division.asymmetric_division_probabilities[i];
+	}
+	// if we're here, then do not do asym div
+	return;
+}
+
+//  alternative way to select the index from weights that could be faster (is faster as # cell types --> infinity)
+// int select_by_probabilities( const std::vector<double>& probabilities )
+// {
+// 	double r = UniformRandom();
+
+// 	std::vector<double> cumulative_weights(probabilities.size());
+// 	std::partial_sum(probabilities.begin(), probabilities.end(), cumulative_weights.begin());
+
+// 	// Use binary search to find the index
+// 	auto it = std::upper_bound(cumulative_weights.begin(), cumulative_weights.end(), r);
+// 	int index = std::distance(cumulative_weights.begin(), it);
+// 	if (index >= probabilities.size())
+// 	{ return -1; }
+	
+// 	return index;
+// }
 
 void dynamic_attachments( Cell* pCell , Phenotype& phenotype, double dt )
 {
@@ -1292,6 +1441,8 @@ void dynamic_attachments( Cell* pCell , Phenotype& phenotype, double dt )
     while( done == false && j < pCell->state.neighbors.size() )
     {
         Cell* pTest = pCell->state.neighbors[j]; 
+		if (phenotype.cell_interactions.pAttackTarget==pTest || pTest->phenotype.cell_interactions.pAttackTarget==pCell) // do not let attackers detach randomly
+		{ continue; }
         if( pTest->state.number_of_attached_cells() < pTest->phenotype.mechanics.maximum_number_of_attachments )
         {
             // std::string search_string = "adhesive affinity to " + pTest->type_name; 
