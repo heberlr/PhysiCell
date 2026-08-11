@@ -203,7 +203,7 @@ class pyMCDS:
             a plane of voxel centers in the z-axis.
         Returns
         -------
-        conc_arr : array (np.float) shape=[nx_voxels, ny_voxels, nz_voxels]
+        conc_arr : array (float) shape=[nx_voxels, ny_voxels, nz_voxels]
             Contains the concentration of the specified chemical in each voxel.
             The array spatially maps to a meshgrid of the voxel centers.
         """
@@ -354,15 +354,15 @@ class pyMCDS:
         # while we're at it, find the mesh
         coord_str = mesh_node.find('x_coordinates').text
         delimiter = mesh_node.find('x_coordinates').get('delimiter')
-        x_coords = np.array(coord_str.split(delimiter), dtype=np.float)
+        x_coords = np.array(coord_str.split(delimiter), dtype=float)
 
         coord_str = mesh_node.find('y_coordinates').text
         delimiter = mesh_node.find('y_coordinates').get('delimiter')
-        y_coords = np.array(coord_str.split(delimiter), dtype=np.float)
+        y_coords = np.array(coord_str.split(delimiter), dtype=float)
 
         coord_str = mesh_node.find('z_coordinates').text
         delimiter = mesh_node.find('z_coordinates').get('delimiter')
-        z_coords = np.array(coord_str.split(delimiter), dtype=np.float)
+        z_coords = np.array(coord_str.split(delimiter), dtype=float)
 
         # reshape into a mesh grid
         xx, yy, zz = np.meshgrid(x_coords, y_coords, z_coords)
@@ -479,10 +479,17 @@ class pyMCDS:
         for label in cell_node.find('labels').findall('label'):
             # I don't like spaces in my dictionary keys
             fixed_label = label.text.replace(' ', '_')
-            if int(label.get('size')) > 1:
-                # tags to differentiate repeated labels (usually space related)
-                dir_label = ['_x', '_y', '_z']
-                for i in range(int(label.get('size'))):
+            size = int(label.get('size'))
+            if size > 1:
+                # tags to differentiate repeated labels (usually space related);
+                # only x/y/z-sized labels get the familiar suffixes, anything
+                # longer (e.g. a padded list of attached-cell IDs) is just
+                # numbered so parsing doesn't depend on the vector's length
+                if size <= 3:
+                    dir_label = ['_x', '_y', '_z']
+                else:
+                    dir_label = [f'_{i}' for i in range(size)]
+                for i in range(size):
                     data_labels.append(fixed_label + dir_label[i])
             else:
                 data_labels.append(fixed_label)

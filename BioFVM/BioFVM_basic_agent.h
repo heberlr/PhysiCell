@@ -57,6 +57,11 @@
 namespace BioFVM{
 
 void reset_max_basic_agent_ID( void );
+// current value of the "next ID to assign" counter, for persisting across save/resume
+int get_max_basic_agent_ID( void );
+// set the "next ID to assign" counter to an arbitrary value (e.g. restoring it on resume);
+// unlike reset_max_basic_agent_ID(), this is not limited to 0
+void set_max_basic_agent_ID( int new_value );
 
 class Basic_Agent
 {

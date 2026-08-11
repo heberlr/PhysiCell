@@ -135,10 +135,29 @@ void save_PhysiCell_to_MultiCellDS_v2( std::string filename_base , Microenvironm
 	// start with a standard BioFVM save
 		// overall XML structure 
 	add_MultiCellDS_main_structure_to_open_xml_pugi( BioFVM::biofvm_doc ); 
-		// save metadata 
-	BioFVM_metadata.add_to_open_xml_pugi( current_simulation_time , BioFVM::biofvm_doc ); 
-		// save diffusing substrates 
-	add_BioFVM_substrates_to_open_xml_pugi( BioFVM::biofvm_doc , filename_base, M  ); 
+		// save metadata
+	BioFVM_metadata.add_to_open_xml_pugi( current_simulation_time , BioFVM::biofvm_doc );
+
+		// persist the "next ID to assign" counter, so a resumed run can continue issuing new
+		// cell IDs without colliding with cells that are still alive at resume time -- restoring
+		// each cell's own ID (done in recreate_sim_state()) is not enough on its own, since the
+		// counter only ever climbs and is never reused, even for cells that later die
+	{
+		pugi::xml_node metadata_node = BioFVM::biofvm_doc.child( "MultiCellDS" ).child( "metadata" );
+		pugi::xml_node id_node = metadata_node.child( "PhysiCell_max_basic_agent_ID" );
+		char id_buffer[64];
+		sprintf( id_buffer , "%d" , BioFVM::get_max_basic_agent_ID() );
+		if( id_node )
+		{ id_node.first_child().set_value( id_buffer ); }
+		else
+		{
+			id_node = metadata_node.append_child( "PhysiCell_max_basic_agent_ID" );
+			id_node.append_child( pugi::node_pcdata ).set_value( id_buffer );
+		}
+	}
+
+		// save diffusing substrates
+	add_BioFVM_substrates_to_open_xml_pugi( BioFVM::biofvm_doc , filename_base, M  );
 
 		// add_BioFVM_agents_to_open_xml_pugi( xml_dom , filename_base, M); 
 	
@@ -198,14 +217,30 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 	static int m =  microenvironment.number_of_densities(); // number_of_substrates  
 	// get number of cell types
 	static int n = cell_definition_indices_by_name.size(); // number_of_cell_types
-	// get number of death models 
-	static int nd = (*all_cells)[0]->phenotype.death.rates.size(); // 
-	// get number of custom data 
-	static int nc = 0; // 
-	static int nc_scalar = 0; 
-	static int nc_vector = 0; 
+	// get number of death models
+	static int nd = (*all_cells)[0]->phenotype.death.rates.size(); //
+	// get number of custom data
+	static int nc = 0; //
+	static int nc_scalar = 0;
+	static int nc_vector = 0;
 
-	static int cell_data_size = 0; 
+	// fixed-width cap for saved attached_cells / spring_attachments ID lists --
+	// must be the largest maximum_number_of_attachments across all cell
+	// definitions, since every cell's record in the .mat matrix must be the
+	// same length. Unused slots are padded with -1 (same "-1 = none"
+	// convention already used for attack_target).
+	static int max_attach_cap = 0;
+	if( max_attach_cap == 0 )
+	{
+		for( int j=0; j < cell_definitions_by_index.size(); j++ )
+		{
+			int cap = cell_definitions_by_index[j]->phenotype.mechanics.maximum_number_of_attachments;
+			if( cap > max_attach_cap )
+			{ max_attach_cap = cap; }
+		}
+	}
+
+	static int cell_data_size = 0;
 
 	static bool legend_done = false; 
 	static std::vector<std::string> data_names; 
@@ -307,9 +342,18 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 
 	/* state variables to save */ 
 	// state 
-		// velocity // 3 
-		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
-			"velocity" , "micron/min" , 3 ); 
+		// velocity // 3
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"velocity" , "micron/min" , 3 );
+
+		// previous_velocity // 3
+		// needed for the Adams-Bashforth position update in Cell::update_position()
+		// (PhysiCell_cell.cpp) -- without it, a resumed run starts its first
+		// mechanics step as if previous_velocity were zero instead of its true
+		// value, injecting error into (almost) every cell's very first post-resume
+		// position update.
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"previous_velocity" , "micron/min" , 3 );
 
 		// pressure // 1
 		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
@@ -328,11 +372,22 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
 			"total_attack_time" , "min" , 1 ); 
 
-		// contact_with_basement_membrane // 1 
-		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
-			"contact_with_basement_membrane" , "none" , 1 ); 
+		// contact_with_basement_membrane // 1
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"contact_with_basement_membrane" , "none" , 1 );
 
-	/* now go through phenotype and state */ 
+		// is_movable // 1
+		// dynamically toggled (e.g. false while being phagocytosed, or once
+		// dead/out of domain) -- without saving it, resume always falls back
+		// to the cell type's default, letting cells move that shouldn't.
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"is_movable" , "none" , 1 );
+
+		// is_out_of_domain // 1
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"is_out_of_domain" , "none" , 1 );
+
+	/* now go through phenotype and state */
 		// cycle 
 		// cycle model // already above 
 		// current phase // already above 
@@ -384,10 +439,26 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 			"target_solid_nuclear" , "cubic microns" , 1 ); 
 
 		// target_fluid_fraction; // 1
-		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
-			"target_fluid_fraction" , "none" , 1 ); 
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"target_fluid_fraction" , "none" , 1 );
 
-	// geometry 
+		// fluid / nuclear_solid / cytoplasmic_solid -- these (not total/nuclear/
+		// cytoplasmic) are the actual first-order ODE state that
+		// standard_volume_update_function integrates each step
+		// (x += dt*rate*(target - x)); total/nuclear/cytoplasmic are recomputed
+		// FROM these every call. Without saving them, a resumed cell's volume
+		// integration restarts from the cell type's default solid/fluid split
+		// instead of wherever it actually was -- invisible for a cell at
+		// homeostasis, but a large one-step jump for any cell mid-way through
+		// an active volume change (e.g. shrinking under attack damage).
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"fluid" , "cubic microns" , 1 );
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"nuclear_solid" , "cubic microns" , 1 );
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"cytoplasmic_solid" , "cubic microns" , 1 );
+
+	// geometry
 		// radius //1 
 		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
 			"radius" , "microns" , 1 ); 
@@ -439,9 +510,19 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
 			"attachment_rate" , "1/min" , 1 ); 
 
-		// detachment_rate; // 1 
-		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes, 
-			"detachment_rate" , "1/min" , 1 ); 
+		// detachment_rate; // 1
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"detachment_rate" , "1/min" , 1 );
+
+		// attached_cells / spring_attachments -- Cell* pointer lists, saved as
+		// cell IDs (padded with -1) and re-resolved to pointers after every
+		// cell has been created on resume. Without this, every attachment
+		// bond (e.g. a macrophage mid-phagocytosis) is silently dropped on
+		// resume even though the bond's elastic force is applied every step.
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"attached_cell_IDs" , "none" , max_attach_cap );
+		add_variable_to_labels( data_names,data_units,data_start_indices,data_sizes,
+			"spring_attachment_IDs" , "none" , max_attach_cap );
 
 	 // Motility
 		// is_motile // 1
@@ -817,9 +898,11 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 
  /* state variables to save */ 
 // state
-		// name = "velocity"; 
-		std::fwrite( pCell->velocity.data() , sizeof(double) , 3 , fp ); 
-		// name = "pressure"; 
+		// name = "velocity";
+		std::fwrite( pCell->velocity.data() , sizeof(double) , 3 , fp );
+		// name = "previous_velocity";
+		std::fwrite( pCell->get_previous_velocity().data() , sizeof(double) , 3 , fp );
+		// name = "pressure";
 		std::fwrite( &( pCell->state.simple_pressure ) , sizeof(double) , 1 , fp ); 
 		// name = "number_of_nuclei"; 
 		dTemp = (double) pCell->state.number_of_nuclei; 
@@ -828,9 +911,15 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 		// std::fwrite( &( pCell->phenotype.integrity.damage ) , sizeof(double) , 1 , fp ); 
 		// name = "total_attack_time"; 
 		std::fwrite( &( pCell->state.total_attack_time ) , sizeof(double) , 1 , fp ); 
-		// name = "contact_with_basement_membrane"; 
-		dTemp = (double) pCell->state.contact_with_basement_membrane; 
-		std::fwrite( &( dTemp ) , sizeof(double) , 1 , fp ); 
+		// name = "contact_with_basement_membrane";
+		dTemp = (double) pCell->state.contact_with_basement_membrane;
+		std::fwrite( &( dTemp ) , sizeof(double) , 1 , fp );
+		// name = "is_movable";
+		dTemp = (double) pCell->is_movable;
+		std::fwrite( &( dTemp ) , sizeof(double) , 1 , fp );
+		// name = "is_out_of_domain";
+		dTemp = (double) pCell->is_out_of_domain;
+		std::fwrite( &( dTemp ) , sizeof(double) , 1 , fp );
 
 /* now go through phenotype and state */ 
 // cycle 
@@ -865,10 +954,16 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 		std::fwrite( &( pCell->phenotype.volume.target_solid_cytoplasmic ) , sizeof(double) , 1 , fp ); 
 		// name = "target_solid_nuclear"; 
 		std::fwrite( &( pCell->phenotype.volume.target_solid_nuclear ) , sizeof(double) , 1 , fp ); 
-		// name = "target_fluid_fraction"; 
-		std::fwrite( &( pCell->phenotype.volume.target_fluid_fraction ) , sizeof(double) , 1 , fp ); 
+		// name = "target_fluid_fraction";
+		std::fwrite( &( pCell->phenotype.volume.target_fluid_fraction ) , sizeof(double) , 1 , fp );
+		// name = "fluid";
+		std::fwrite( &( pCell->phenotype.volume.fluid ) , sizeof(double) , 1 , fp );
+		// name = "nuclear_solid";
+		std::fwrite( &( pCell->phenotype.volume.nuclear_solid ) , sizeof(double) , 1 , fp );
+		// name = "cytoplasmic_solid";
+		std::fwrite( &( pCell->phenotype.volume.cytoplasmic_solid ) , sizeof(double) , 1 , fp );
 
-  // geometry 
+  // geometry
      // radius //1 
 		// name = "radius"; 
 		std::fwrite( &( pCell->phenotype.geometry.radius ) , sizeof(double) , 1 , fp ); 
@@ -898,8 +993,31 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 		std::fwrite( &( pCell->phenotype.mechanics.attachment_elastic_constant ) , sizeof(double) , 1 , fp ); 
 		// name = "attachment_rate"; 
 		std::fwrite( &( pCell->phenotype.mechanics.attachment_rate ) , sizeof(double) , 1 , fp ); 
- 		// name = "detachment_rate"; 
-		std::fwrite( &( pCell->phenotype.mechanics.detachment_rate ) , sizeof(double) , 1 , fp ); 
+ 		// name = "detachment_rate";
+		std::fwrite( &( pCell->phenotype.mechanics.detachment_rate ) , sizeof(double) , 1 , fp );
+
+		// name = "attached_cell_IDs" -- pad unused slots with -1
+		{
+			double id_buffer;
+			for( int j=0; j < max_attach_cap; j++ )
+			{
+				id_buffer = -1.0;
+				if( j < pCell->state.attached_cells.size() )
+				{ id_buffer = (double) pCell->state.attached_cells[j]->ID; }
+				std::fwrite( &( id_buffer ) , sizeof(double) , 1 , fp );
+			}
+		}
+		// name = "spring_attachment_IDs" -- pad unused slots with -1
+		{
+			double id_buffer;
+			for( int j=0; j < max_attach_cap; j++ )
+			{
+				id_buffer = -1.0;
+				if( j < pCell->state.spring_attachments.size() )
+				{ id_buffer = (double) pCell->state.spring_attachments[j]->ID; }
+				std::fwrite( &( id_buffer ) , sizeof(double) , 1 , fp );
+			}
+		}
 
  // Motility
  		// name = "is_motile"; 
@@ -1326,6 +1444,23 @@ int resume_from_MultiCellDS(std::string folder_path, std::string xml_filename, b
         return -1;
     }
 
+    // saved_max_basic_agent_ID < 0 means this checkpoint predates this field (older save); the
+    // caller falls back to inferring it from the resumed cells' IDs once they're all loaded.
+    int saved_max_basic_agent_ID = -1;
+    xpath_node = doc.select_node("//metadata//PhysiCell_max_basic_agent_ID");
+    node = xpath_node.node();
+    if (node)
+    {
+        saved_max_basic_agent_ID = (int) xml_get_my_double_value(node);
+        std::cout << "   Success reading PhysiCell_max_basic_agent_ID = " << saved_max_basic_agent_ID << std::endl;
+    }
+    else
+    {
+        std::cout << "   --- PhysiCell_max_basic_agent_ID not found in checkpoint (older save?); "
+            << "will infer it from resumed cell IDs instead, which is not guaranteed to match "
+            << "the original run's ID sequence if any cells died before this checkpoint.\n" << std::endl;
+    }
+
     pugi::xml_node microenv_data = doc.child("MultiCellDS").child("microenvironment").child("domain").child("data");
     if (!microenv_data)
     {
@@ -1434,6 +1569,28 @@ int resume_from_MultiCellDS(std::string folder_path, std::string xml_filename, b
 
     int retval = recreate_sim_state(cells_mat_filename, microenvironment, custom_data_vars, create_cells, debug_print);
 
+    // Restore (or, for older checkpoints without the saved value, approximate) the "next ID to
+    // assign" counter -- must happen after recreate_sim_state() has created every cell, since each
+    // create_cell() call bumps the counter internally and would otherwise overwrite this.
+    if( saved_max_basic_agent_ID >= 0 )
+    {
+        BioFVM::set_max_basic_agent_ID( saved_max_basic_agent_ID );
+        std::cout << "--- resuming max_basic_agent_ID at saved value " << saved_max_basic_agent_ID << std::endl;
+    }
+    else
+    {
+        int inferred_max_id = -1;
+        for( int i=0; i < (*all_cells).size(); i++ )
+        {
+            if( (*all_cells)[i]->ID > inferred_max_id )
+            { inferred_max_id = (*all_cells)[i]->ID; }
+        }
+        BioFVM::set_max_basic_agent_ID( inferred_max_id + 1 );
+        std::cout << "--- resuming max_basic_agent_ID at inferred value " << (inferred_max_id + 1)
+            << " (approximate -- no cells died before this checkpoint was made, or IDs may not "
+            << "match an uninterrupted run)" << std::endl;
+    }
+
     return 0;
 }
 
@@ -1448,6 +1605,18 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
     std::cout << "------- number_of_densities= " << m_densities << std::endl;
     std::cout << "------- number of cell types= " << n_cell_types << std::endl;
     static int nd = 0; // will be set from first cell
+
+    // must match the writer's computation exactly (same cell definitions, same project)
+    static int max_attach_cap = 0;
+    if( max_attach_cap == 0 )
+    {
+        for( int j=0; j < cell_definitions_by_index.size(); j++ )
+        {
+            int cap = cell_definitions_by_index[j]->phenotype.mechanics.maximum_number_of_attachments;
+            if( cap > max_attach_cap )
+            { max_attach_cap = cap; }
+        }
+    }
     
     // Open the MAT file for reading
     FILE* fp = fopen(filename.c_str(), "rb");
@@ -1485,6 +1654,7 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
     double cell_vol;
     double orientation[3];
     double velocity[3];
+    double previous_velocity[3];
     double migration_bias_direction[3];
     double motility_vector[3];
     double params[10];
@@ -1493,9 +1663,13 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
     // Store attack target IDs for later resolution
     std::vector<int> attack_target_ids;
     
-    Cell_Definition* pCD; 
+    Cell_Definition* pCD;
     Cell* pCell;
     std::vector<std::pair<Cell*, int>> cell_attackID;
+    // one (cell, target ID) pair per non-(-1) slot in the saved attached_cells /
+    // spring_attachments lists; resolved to pointers after every cell exists
+    std::vector<std::pair<Cell*, int>> cell_attachedID;
+    std::vector<std::pair<Cell*, int>> cell_springID;
 
     // Read each cell
     std::cout << "reading cell data..." << std::endl;
@@ -1616,7 +1790,13 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
             pCell->velocity[1] = velocity[1];
             pCell->velocity[2] = velocity[2];
         }
-        
+
+        fread(previous_velocity, sizeof(double), 3, fp);
+        if (debug_print)
+        { std::cout << "previous_velocity= " << previous_velocity[0]<<", "<<previous_velocity[1]<<", " << previous_velocity[2]  << std::endl; }
+        if (create_cells)
+        { pCell->set_previous_velocity(previous_velocity[0], previous_velocity[1], previous_velocity[2]); }
+
         fread(&dTemp, sizeof(double), 1, fp);
         if (debug_print)
         { std::cout << "state.simple_pressure= " << dTemp  << std::endl; }
@@ -1640,7 +1820,18 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
         { std::cout << "state.contact_with_basement_membrane= " << bool(dTemp)  << std::endl; }
         if (create_cells)
         { pCell->state.contact_with_basement_membrane = (bool)dTemp; }
-        
+
+        fread(&dTemp, sizeof(double), 1, fp);
+        if (debug_print)
+        { std::cout << "is_movable= " << bool(dTemp)  << std::endl; }
+        if (create_cells)
+        { pCell->is_movable = (bool)dTemp; }
+
+        fread(&dTemp, sizeof(double), 1, fp);
+        if (debug_print)
+        { std::cout << "is_out_of_domain= " << bool(dTemp)  << std::endl; }
+        if (create_cells)
+        { pCell->is_out_of_domain = (bool)dTemp; }
 
 
         // cell cycle
@@ -1726,7 +1917,29 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
             pCell->phenotype.volume.target_fluid_fraction = params[6];
         }
 
-        
+        // fluid / nuclear_solid / cytoplasmic_solid -- the actual integrated
+        // ODE state behind total/nuclear/cytoplasmic volume (see save-side
+        // comment). Must be restored, not just the derived totals, or a cell
+        // mid-way through an active volume change jumps on the very next step.
+        fread(&dTemp, sizeof(double), 1, fp);
+        if (debug_print)
+        { std::cout << "phenotype.volume.fluid= " << dTemp << std::endl; }
+        if (create_cells)
+        { pCell->phenotype.volume.fluid = dTemp; }
+
+        fread(&dTemp, sizeof(double), 1, fp);
+        if (debug_print)
+        { std::cout << "phenotype.volume.nuclear_solid= " << dTemp << std::endl; }
+        if (create_cells)
+        { pCell->phenotype.volume.nuclear_solid = dTemp; }
+
+        fread(&dTemp, sizeof(double), 1, fp);
+        if (debug_print)
+        { std::cout << "phenotype.volume.cytoplasmic_solid= " << dTemp << std::endl; }
+        if (create_cells)
+        { pCell->phenotype.volume.cytoplasmic_solid = dTemp; }
+
+
         // Geometry
         fread(params, sizeof(double), 3, fp);
         if (debug_print)
@@ -1774,25 +1987,51 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
         }
 
         // continuation of mechanics params
+        // NOTE: write order (PhysiCell_MultiCellDS.cpp save function) is
+        // relative_maximum_adhesion_distance, maximum_number_of_attachments,
+        // attachment_elastic_constant, attachment_rate, detachment_rate --
+        // this must match exactly, or every resumed cell silently gets each
+        // other's values for these 5 fields.
         fread(params, sizeof(double), 5, fp);
         if (debug_print)
         {
-            std::cout << "pCell->phenotype.mechanics.attachment_elastic_constant = " << params[0] << std::endl;
-            std::cout << "pCell->phenotype.mechanics.attachment_rate = " << params[1] << std::endl;
-            std::cout << "pCell->phenotype.mechanics.detachment_rate = " << params[2] << std::endl;
-            std::cout << "pCell->phenotype.relative_maximum_adhesion_distance = " << params[3] << std::endl;
-            std::cout << "pCell->phenotype.mechanics.maximum_number_of_attachments = " << (int)params[4] << std::endl;
+            std::cout << "pCell->phenotype.mechanics.relative_maximum_adhesion_distance = " << params[0] << std::endl;
+            std::cout << "pCell->phenotype.mechanics.maximum_number_of_attachments = " << (int)params[1] << std::endl;
+            std::cout << "pCell->phenotype.mechanics.attachment_elastic_constant = " << params[2] << std::endl;
+            std::cout << "pCell->phenotype.mechanics.attachment_rate = " << params[3] << std::endl;
+            std::cout << "pCell->phenotype.mechanics.detachment_rate = " << params[4] << std::endl;
         }
         if (create_cells)
         {
-            pCell->phenotype.mechanics.attachment_elastic_constant = params[0];
-            pCell->phenotype.mechanics.attachment_rate = params[1];
-            pCell->phenotype.mechanics.detachment_rate = params[2];
-            pCell->phenotype.mechanics.relative_maximum_adhesion_distance = params[3];
-            pCell->phenotype.mechanics.maximum_number_of_attachments = (int)params[4];
+            pCell->phenotype.mechanics.relative_maximum_adhesion_distance = params[0];
+            pCell->phenotype.mechanics.maximum_number_of_attachments = (int)params[1];
+            pCell->phenotype.mechanics.attachment_elastic_constant = params[2];
+            pCell->phenotype.mechanics.attachment_rate = params[3];
+            pCell->phenotype.mechanics.detachment_rate = params[4];
         }
 
-        
+        // attached_cell_IDs / spring_attachment_IDs (padded with -1; resolved
+        // to pointers in a second pass below, once every cell exists)
+        for (int j=0; j < max_attach_cap; j++)
+        {
+            fread(&dTemp, sizeof(double), 1, fp);
+            int target_id = (int)dTemp;
+            if (debug_print)
+            { std::cout << "attached_cell_IDs[" << j << "] = " << target_id << std::endl; }
+            if (create_cells && target_id >= 0)
+            { cell_attachedID.push_back({pCell, target_id}); }
+        }
+        for (int j=0; j < max_attach_cap; j++)
+        {
+            fread(&dTemp, sizeof(double), 1, fp);
+            int target_id = (int)dTemp;
+            if (debug_print)
+            { std::cout << "spring_attachment_IDs[" << j << "] = " << target_id << std::endl; }
+            if (create_cells && target_id >= 0)
+            { cell_springID.push_back({pCell, target_id}); }
+        }
+
+
         // Motility
         fread(&dTemp, sizeof(double), 1, fp);
         if (debug_print)
@@ -2199,6 +2438,42 @@ int recreate_sim_state(std::string filename, Microenvironment& M,
                     (pair.first)->phenotype.cell_interactions.pAttackTarget = cell;
                     if (debug_print)
                     { std::cout << "    cell ID=" << (pair.first)->ID << " attacking  cell ID=" << cell->ID << std::endl; }
+                    break;
+                }
+            }
+        }
+
+        if (debug_print)
+        { std::cout << "----  resolve state.attached_cells (if any) ----" << std::endl; }
+        // recall: cell_attachedID.push_back({pCell, target_id});
+        // attach_cell() is single-sided and dedups, so processing both sides'
+        // saved lists (as saved symmetrically by attach_cells()) reconstructs
+        // the bond without double-adding it.
+        for (const auto& pair : cell_attachedID)
+        {
+            for (auto* cell : *all_cells)
+            {
+                if (cell->ID == pair.second)
+                {
+                    (pair.first)->attach_cell(cell);
+                    if (debug_print)
+                    { std::cout << "    cell ID=" << (pair.first)->ID << " attached to cell ID=" << cell->ID << std::endl; }
+                    break;
+                }
+            }
+        }
+
+        if (debug_print)
+        { std::cout << "----  resolve state.spring_attachments (if any) ----" << std::endl; }
+        for (const auto& pair : cell_springID)
+        {
+            for (auto* cell : *all_cells)
+            {
+                if (cell->ID == pair.second)
+                {
+                    (pair.first)->attach_cell_as_spring(cell);
+                    if (debug_print)
+                    { std::cout << "    cell ID=" << (pair.first)->ID << " spring-attached to cell ID=" << cell->ID << std::endl; }
                     break;
                 }
             }

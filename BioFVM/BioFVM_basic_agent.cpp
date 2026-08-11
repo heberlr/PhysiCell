@@ -61,6 +61,16 @@ void reset_max_basic_agent_ID( void )
 	max_basic_agent_ID = 0;
 }
 
+int get_max_basic_agent_ID( void )
+{
+	return max_basic_agent_ID;
+}
+
+void set_max_basic_agent_ID( int new_value )
+{
+	max_basic_agent_ID = new_value;
+}
+
 Basic_Agent::Basic_Agent()
 {
 	//give the agent a unique ID  

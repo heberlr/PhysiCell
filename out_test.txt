@@ -1,0 +1,3178 @@
+Using config file local_runs/physicell-restart-repro_20260810_172829/straight/PhysiCell_settings.xml ... 
+Using counter-based RNG mode
+Setting up RNG with seed 17
+0
+dc? 0
+User parameters in XML config file: 
+Bool parameters:: 
+
+Int parameters:: 
+number_of_cells: 0 [none]
+
+Double parameters:: 
+
+String parameters:: 
+
+
+which boundaries?
+0 0 0 0 0 0
+
+Microenvironment summary: microenvironment: 
+
+Mesh information: 
+type: uniform Cartesian
+Domain: [-250,250] micron x [-250,250] micron x [-10,10] micron
+   resolution: dx = 20 micron
+   voxels: 625
+   voxel faces: 0
+   volume: 5e+06 cubic micron
+Densities: (2 total)
+   virus:
+     units: dimensionless
+     diffusion coefficient: 1000 micron^2 / min
+     decay rate: 0 min^-1
+     diffusion length scale: 3.16228e+07 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+   interferon:
+     units: dimensionless
+     diffusion coefficient: 10000 micron^2 / min
+     decay rate: 10 min^-1
+     diffusion length scale: 31.6228 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+
+virtual_wall_at_domain_edge: enabled
+Pre-processing type 0 named epithelial
+Pre-processing type 1 named epithelial_infected
+Pre-processing type 2 named macrophage
+Processing epithelial ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+  --------- attachment_elastic_constant = 0.01
+Processing epithelial_infected ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to epithelial_infected
+  --------- attachment_elastic_constant = 0.01
+Processing macrophage ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to macrophage
+  --------- attachment_elastic_constant = 0.01
+Cells of type macrophage use standard chemotaxis: 
+	 d_bias (before normalization) = 1 * grad(interferon)
+Signals: 
+=======
+0 : virus
+1 : interferon
+2 : intracellular virus
+3 : intracellular interferon
+4 : virus gradient
+5 : interferon gradient
+6 : pressure
+7 : volume
+8 : contact with epithelial
+9 : contact with epithelial_infected
+10 : contact with macrophage
+11 : contact with live cell
+12 : contact with dead cell
+13 : contact with apoptotic cell
+14 : contact with necrotic cell
+15 : contact with other dead cell
+16 : contact with basement membrane
+17 : damage
+18 : damage delivered
+19 : attacking
+20 : dead
+21 : total attack time
+22 : time
+23 : custom:sample
+24 : apoptotic
+25 : necrotic
+
+
+Behaviors: 
+=========
+0 : virus secretion
+1 : interferon secretion
+2 : virus secretion target
+3 : interferon secretion target
+4 : virus uptake
+5 : interferon uptake
+6 : virus export
+7 : interferon export
+8 : cycle entry
+9 : exit from cycle phase 1
+10 : exit from cycle phase 2
+11 : exit from cycle phase 3
+12 : exit from cycle phase 4
+13 : exit from cycle phase 5
+14 : apoptosis
+15 : necrosis
+16 : migration speed
+17 : migration bias
+18 : migration persistence time
+19 : chemotactic response to virus
+20 : chemotactic response to interferon
+21 : cell-cell adhesion
+22 : cell-cell adhesion elastic constant
+23 : adhesive affinity to epithelial
+24 : adhesive affinity to epithelial_infected
+25 : adhesive affinity to macrophage
+26 : relative maximum adhesion distance
+27 : cell-cell repulsion
+28 : cell-BM adhesion
+29 : cell-BM repulsion
+30 : phagocytose apoptotic cell
+31 : phagocytose necrotic cell
+32 : phagocytose other dead cell
+33 : phagocytose epithelial
+34 : phagocytose epithelial_infected
+35 : phagocytose macrophage
+36 : attack epithelial
+37 : attack epithelial_infected
+38 : attack macrophage
+39 : fuse to epithelial
+40 : fuse to epithelial_infected
+41 : fuse to macrophage
+42 : transition to epithelial
+43 : transition to epithelial_infected
+44 : transition to macrophage
+45 : asymmetric division to epithelial
+46 : asymmetric division to epithelial_infected
+47 : asymmetric division to macrophage
+48 : custom:sample
+49 : is_movable
+50 : immunogenicity to epithelial
+51 : immunogenicity to epithelial_infected
+52 : immunogenicity to macrophage
+53 : cell attachment rate
+54 : cell detachment rate
+55 : maximum number of cell attachments
+56 : attack damage rate
+57 : attack duration
+58 : damage rate
+59 : damage repair rate
+
+
+ruleset
+	Processing ruleset in ./config/cell_rules.csv ... 
+	Format: CSV (current version 3)
+Processing rules in file ./config/cell_rules.csv ... 
+Adding rule for epithelial cells:
+	virus increases transform to epithelial_infected towards 0.1 with a Hill response, with half-max 0.4 and Hill power 8.
+Adding rule for macrophage cells:
+	volume decreases phagocytose epithelial_infected towards 0 with a Hill response, with half-max 5000 and Hill power 12.
+Done!
+
+Copying ./config/cell_rules.csv to output folder.
+Copy command: cp ./config/cell_rules.csv local_runs/physicell-restart-repro_20260810_172829/straight/output/cell_rules.csv
+Behavioral rules for cell type epithelial:
+===================================================
+virus increases transform to epithelial_infected
+
+Behavioral rules for cell type epithelial_infected:
+===================================================
+
+Behavioral rules for cell type macrophage:
+===================================================
+volume decreases phagocytose epithelial_infected
+
+Exporting rules to file local_runs/physicell-restart-repro_20260810_172829/straight/output/cell_rules_parsed.csv (v3 format) ... 
+Done!
+
+0 :: type:0 name: epithelial
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+		 contact function: true
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 1 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 1 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+1 :: type:1 name: epithelial_infected
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration 1388.89 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 5.31667e-05 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+2 :: type:2 name: macrophage
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: true in 2D)
+		speed: 1 micron/min
+		bias: 0.15 
+		persistence time: 5 min
+		chemotaxis (enabled: true)
+			along 1 * grad(interferon) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+Placing cells of type epithelial ... 
+Placing cells of type epithelial_infected ... 
+Placing cells of type macrophage ... 
+
+Loading cells from CSV file ./config/cells.csv ... 
+Loading cells from detailed (v2) CSV file ./config/cells.csv ... 
+Creating epithelial (type=0) at 103.416 -173.35 0 
+Creating epithelial (type=0) at 82.3826 214.238 0 
+Creating epithelial (type=0) at 218.34 222.15 0 
+Creating epithelial (type=0) at -235.173 88.0577 0 
+Creating epithelial (type=0) at 106.199 228.854 0 
+Creating epithelial (type=0) at -116.319 65.5686 0 
+Creating epithelial (type=0) at -191.712 147.701 0 
+Creating epithelial (type=0) at -128.798 -140.536 0 
+Creating epithelial (type=0) at 132.383 5.25923 0 
+Creating epithelial (type=0) at -134.798 -121.053 0 
+Creating epithelial (type=0) at -249.212 80.0747 0 
+Creating epithelial (type=0) at -101.429 86.8221 0 
+Creating epithelial (type=0) at -67.0118 -13.84 0 
+Creating epithelial (type=0) at -191.588 -205.974 0 
+Creating epithelial (type=0) at -231.165 -29.2661 0 
+Creating epithelial (type=0) at -120.623 -2.51175 0 
+Creating epithelial (type=0) at -95.9023 178.674 0 
+Creating epithelial (type=0) at 54.4249 -32.6586 0 
+Creating epithelial (type=0) at 195.118 20.0159 0 
+Creating epithelial (type=0) at 201.906 -228.785 0 
+Creating epithelial (type=0) at 195.712 -199.771 0 
+Creating epithelial (type=0) at -181.791 -38.9231 0 
+Creating epithelial (type=0) at -46.7268 249.64 0 
+Creating epithelial (type=0) at 210.404 -225.408 0 
+Creating epithelial (type=0) at 62.5897 -222.068 0 
+Creating epithelial (type=0) at 201.242 -67.1497 0 
+Creating epithelial (type=0) at -125.696 110.517 0 
+Creating epithelial (type=0) at -2.12389 -178.254 0 
+Creating epithelial (type=0) at -238.794 80.8812 0 
+Creating epithelial (type=0) at 89.0485 -140.029 0 
+Creating epithelial (type=0) at -1.46618 220.315 0 
+Creating epithelial (type=0) at -67.6709 142.23 0 
+Creating epithelial (type=0) at -21.6549 -102.576 0 
+Creating epithelial (type=0) at 197.628 75.4156 0 
+Creating epithelial (type=0) at -68.0788 62.9996 0 
+Creating epithelial (type=0) at -149.098 201.777 0 
+Creating epithelial (type=0) at 134.215 -77.088 0 
+Creating epithelial (type=0) at 9.08519 182.123 0 
+Creating epithelial (type=0) at -181.367 101.592 0 
+Creating epithelial (type=0) at -42.9195 -173.22 0 
+Creating epithelial (type=0) at 34.5994 -131.168 0 
+Creating epithelial (type=0) at -146.842 112.451 0 
+Creating epithelial (type=0) at 223.687 102.65 0 
+Creating epithelial (type=0) at -214.745 216.249 0 
+Creating epithelial (type=0) at 104.492 80.1419 0 
+Creating epithelial (type=0) at -110.463 186.613 0 
+Creating epithelial (type=0) at 186.111 32.5795 0 
+Creating epithelial (type=0) at 15.8134 214.686 0 
+Creating epithelial (type=0) at -131.895 -58.2969 0 
+Creating epithelial (type=0) at -4.03116 87.9275 0 
+Creating epithelial (type=0) at -54.4452 -200.803 0 
+Creating epithelial (type=0) at -88.8824 -73.6753 0 
+Creating epithelial (type=0) at 75.6919 204.491 0 
+Creating epithelial (type=0) at -225.818 58.0196 0 
+Creating epithelial (type=0) at -103.777 109.445 0 
+Creating epithelial (type=0) at -18.8818 -106.917 0 
+Creating epithelial (type=0) at 22.4252 -201.815 0 
+Creating epithelial (type=0) at -86.1491 140.791 0 
+Creating epithelial (type=0) at 234.612 28.3109 0 
+Creating epithelial (type=0) at 248.641 -18.5187 0 
+Creating epithelial (type=0) at 139.47 21.6144 0 
+Creating epithelial (type=0) at -143.079 -71.7117 0 
+Creating epithelial (type=0) at 71.2966 -226.439 0 
+Creating epithelial (type=0) at -82.0638 217.506 0 
+Creating epithelial (type=0) at 71.8144 -113.354 0 
+Creating epithelial (type=0) at 120.475 -78.984 0 
+Creating epithelial (type=0) at -201.273 -137.636 0 
+Creating epithelial (type=0) at 79.2283 71.3949 0 
+Creating epithelial (type=0) at 131.704 27.6358 0 
+Creating epithelial (type=0) at 199.923 -106.58 0 
+Creating epithelial (type=0) at -13.0181 198.886 0 
+Creating epithelial (type=0) at 233.126 -177.446 0 
+Creating epithelial (type=0) at -241.443 202.776 0 
+Creating epithelial (type=0) at -101.25 -22.2524 0 
+Creating epithelial (type=0) at -39.1323 154.78 0 
+Creating epithelial (type=0) at -41.7375 21.3521 0 
+Creating epithelial (type=0) at 112.213 -17.9338 0 
+Creating epithelial (type=0) at -195.323 81.7517 0 
+Creating epithelial (type=0) at -158.472 227.251 0 
+Creating epithelial (type=0) at -75.8411 44.9128 0 
+Creating epithelial (type=0) at -20.7286 -85.0557 0 
+Creating epithelial (type=0) at 47.7764 -66.3969 0 
+Creating epithelial (type=0) at 116.372 -232.933 0 
+Creating epithelial (type=0) at 127.496 225.19 0 
+Creating epithelial (type=0) at 224.059 -0.914078 0 
+Creating epithelial (type=0) at 49.8929 160.842 0 
+Creating epithelial (type=0) at 200.478 -120.767 0 
+Creating epithelial (type=0) at 53.8398 43.1893 0 
+Creating epithelial (type=0) at -102.987 -12.1161 0 
+Creating epithelial (type=0) at -9.88938 162.288 0 
+Creating epithelial (type=0) at 23.38 32.1886 0 
+Creating epithelial (type=0) at 191.576 77.5085 0 
+Creating epithelial (type=0) at -11.7411 -190.824 0 
+Creating epithelial (type=0) at -5.03043 -118.443 0 
+Creating epithelial (type=0) at -89.9562 -169.325 0 
+Creating epithelial (type=0) at -99.9299 -160.528 0 
+Creating epithelial (type=0) at -90.5454 -117.704 0 
+Creating epithelial (type=0) at 103.336 -109.012 0 
+Creating epithelial (type=0) at -9.70324 134.152 0 
+Creating epithelial (type=0) at -75.802 117.676 0 
+Creating epithelial (type=0) at -60.1781 20.8448 0 
+Creating epithelial (type=0) at -227.894 155.377 0 
+Creating epithelial (type=0) at -191.692 94.2027 0 
+Creating epithelial (type=0) at 52.058 201.476 0 
+Creating epithelial (type=0) at -216.411 19.6341 0 
+Creating epithelial (type=0) at -204.198 -198.166 0 
+Creating epithelial (type=0) at 246.08 38.0571 0 
+Creating epithelial (type=0) at -146.692 209.03 0 
+Creating epithelial (type=0) at -165.906 -98.7018 0 
+Creating epithelial (type=0) at -95.7647 -5.08527 0 
+Creating epithelial (type=0) at -131.814 -120.949 0 
+Creating epithelial (type=0) at -61.7414 -227.706 0 
+Creating epithelial (type=0) at -194.629 150.239 0 
+Creating epithelial (type=0) at 45.7307 108.109 0 
+Creating epithelial (type=0) at -45.6563 -159.351 0 
+Creating epithelial (type=0) at 191.277 121.046 0 
+Creating epithelial (type=0) at -154.646 21.4486 0 
+Creating epithelial (type=0) at -31.7757 148.121 0 
+Creating epithelial (type=0) at 222.437 50.3498 0 
+Creating epithelial (type=0) at 16.7478 61.1863 0 
+Creating epithelial (type=0) at -229.571 47.8193 0 
+Creating epithelial (type=0) at -16.4575 -142.974 0 
+Creating epithelial (type=0) at -219.866 120.499 0 
+Creating epithelial (type=0) at 236.281 115.217 0 
+Creating epithelial (type=0) at 184.635 -156.565 0 
+Creating epithelial (type=0) at -33.1435 -66.2041 0 
+Creating epithelial (type=0) at -54.7648 154.453 0 
+Creating epithelial (type=0) at -222.555 205.69 0 
+Creating epithelial (type=0) at 145.242 -102.733 0 
+Creating epithelial (type=0) at -12.9915 -114.563 0 
+Creating epithelial (type=0) at 221.708 187.431 0 
+Creating epithelial (type=0) at -192.609 125.36 0 
+Creating epithelial (type=0) at -192.806 230.556 0 
+Creating epithelial (type=0) at -151.268 -121.601 0 
+Creating epithelial (type=0) at -135.44 191.539 0 
+Creating epithelial (type=0) at 33.8792 -28.1523 0 
+Creating epithelial (type=0) at 101.659 198.666 0 
+Creating epithelial (type=0) at 127.278 152.914 0 
+Creating epithelial (type=0) at -228.064 -61.1789 0 
+Creating epithelial (type=0) at -243.013 -27.5044 0 
+Creating epithelial (type=0) at 110.598 135.969 0 
+Creating epithelial (type=0) at -217.2 -108.512 0 
+Creating epithelial (type=0) at 132.983 11.7653 0 
+Creating epithelial (type=0) at 203.103 -228.585 0 
+Creating epithelial (type=0) at 138.085 10.9703 0 
+Creating epithelial (type=0) at 47.6034 -0.100386 0 
+Creating epithelial (type=0) at 96.5591 88.7488 0 
+Creating epithelial (type=0) at -5.85824 218.752 0 
+Creating epithelial (type=0) at -151.503 -13.3941 0 
+Creating epithelial (type=0) at 126.018 -70.8768 0 
+Creating epithelial (type=0) at -19.4985 123.195 0 
+Creating epithelial (type=0) at 121.867 159.847 0 
+Creating epithelial (type=0) at 221.938 228.432 0 
+Creating epithelial (type=0) at -7.80339 -131.649 0 
+Creating epithelial (type=0) at 247.337 163.727 0 
+Creating epithelial (type=0) at 133.022 175.717 0 
+Creating epithelial (type=0) at 184.538 143.373 0 
+Creating epithelial (type=0) at -129.623 58.5144 0 
+Creating epithelial (type=0) at -133.404 -99.0693 0 
+Creating epithelial (type=0) at -66.9436 117.696 0 
+Creating epithelial (type=0) at 10.5501 136.115 0 
+Creating epithelial (type=0) at -236.444 218.841 0 
+Creating epithelial (type=0) at -212.4 93.3018 0 
+Creating epithelial (type=0) at 225.227 -158.317 0 
+Creating epithelial (type=0) at 19.6744 -100.696 0 
+Creating epithelial (type=0) at 43.6967 -140.288 0 
+Creating epithelial (type=0) at 243.968 105.952 0 
+Creating epithelial (type=0) at -134.145 15.402 0 
+Creating epithelial (type=0) at -62.4754 172.654 0 
+Creating epithelial (type=0) at 54.2036 -242.667 0 
+Creating epithelial (type=0) at 111.672 206.284 0 
+Creating epithelial (type=0) at 45.4521 178.53 0 
+Creating epithelial (type=0) at 103.944 91.9271 0 
+Creating epithelial (type=0) at -166.446 115.026 0 
+Creating epithelial (type=0) at 224.187 56.8835 0 
+Creating epithelial (type=0) at -18.7857 161.189 0 
+Creating epithelial (type=0) at -64.0053 -29.0684 0 
+Creating epithelial (type=0) at 151.001 -249.726 0 
+Creating epithelial (type=0) at 64.274 91.8194 0 
+Creating epithelial (type=0) at 95.8836 -162.697 0 
+Creating epithelial (type=0) at -9.59097 -128.187 0 
+Creating epithelial (type=0) at -3.19136 -111.685 0 
+Creating epithelial (type=0) at 124.081 169.665 0 
+Creating epithelial (type=0) at -201.869 99.3228 0 
+Creating epithelial (type=0) at -19.5846 212.579 0 
+Creating epithelial (type=0) at -208.223 32.4457 0 
+Creating epithelial (type=0) at 81.7355 -232.612 0 
+Creating epithelial (type=0) at 28.2145 -205.144 0 
+Creating epithelial (type=0) at -14.0955 126.452 0 
+Creating epithelial (type=0) at 153.171 -136.904 0 
+Creating epithelial (type=0) at 29.8179 125.049 0 
+Creating epithelial (type=0) at -87.7439 98.4205 0 
+Creating epithelial (type=0) at -247.304 11.6712 0 
+Creating epithelial (type=0) at -175.984 -102.232 0 
+Creating epithelial (type=0) at -112.4 126.974 0 
+Creating epithelial (type=0) at -165.948 180.154 0 
+Creating epithelial (type=0) at -13.7891 -9.42435 0 
+Creating epithelial (type=0) at 186.578 42.1498 0 
+Creating epithelial (type=0) at -176.374 -98.5853 0 
+Creating epithelial (type=0) at -168.782 182.67 0 
+Creating epithelial (type=0) at 210 -223.69 0 
+Creating epithelial (type=0) at 2.94497 -70.2685 0 
+Creating epithelial (type=0) at -226.009 167.563 0 
+Creating epithelial (type=0) at 52.8021 44.7103 0 
+Creating epithelial (type=0) at 112.102 186.105 0 
+Creating epithelial (type=0) at -141.466 172.656 0 
+Creating epithelial (type=0) at -110.109 -187.667 0 
+Creating epithelial (type=0) at 245.899 -10.9617 0 
+Creating epithelial (type=0) at 5.97105 83.1725 0 
+Creating epithelial (type=0) at 172.286 -50.0386 0 
+Creating epithelial (type=0) at 36.8633 203.079 0 
+Creating epithelial (type=0) at -167.346 160.57 0 
+Creating epithelial (type=0) at -125.09 69.3567 0 
+Creating epithelial (type=0) at -85.5835 -140.339 0 
+Creating epithelial (type=0) at -144.469 -241.173 0 
+Creating epithelial (type=0) at -132.469 -120.606 0 
+Creating epithelial (type=0) at -77.9258 209.46 0 
+Creating epithelial (type=0) at 148.246 -169.531 0 
+Creating epithelial (type=0) at 69.3146 -187.698 0 
+Creating epithelial (type=0) at 7.76422 -190.508 0 
+Creating epithelial (type=0) at 91.688 111.818 0 
+Creating epithelial (type=0) at 230.577 246.381 0 
+Creating epithelial (type=0) at 187.06 -34.9301 0 
+Creating epithelial (type=0) at -135.597 -35.2815 0 
+Creating epithelial (type=0) at 158.462 -52.163 0 
+Creating epithelial (type=0) at -40.9829 -75.3078 0 
+Creating epithelial (type=0) at 185.409 165.593 0 
+Creating epithelial (type=0) at 106.339 187.094 0 
+Creating epithelial (type=0) at -49.1103 -21.9294 0 
+Creating epithelial (type=0) at -156.175 94.5062 0 
+Creating epithelial (type=0) at -177.191 81.1096 0 
+Creating epithelial (type=0) at 200.826 -129.555 0 
+Creating epithelial (type=0) at -3.25255 -122.304 0 
+Creating epithelial (type=0) at 145.356 -54.8301 0 
+Creating epithelial (type=0) at -0.179215 -41.1313 0 
+Creating epithelial (type=0) at 30.763 -78.8042 0 
+Creating epithelial (type=0) at -213.642 5.22738 0 
+Creating epithelial (type=0) at 107.877 128.986 0 
+Creating epithelial (type=0) at -141.702 95.2867 0 
+Creating epithelial (type=0) at 214.182 -83.9865 0 
+Creating epithelial (type=0) at 103.366 219.14 0 
+Creating epithelial (type=0) at -172.966 217.275 0 
+Creating epithelial (type=0) at 116.172 -153.635 0 
+Creating epithelial (type=0) at 3.40996 174.498 0 
+Creating epithelial (type=0) at 105.28 57.8372 0 
+Creating epithelial (type=0) at 49.5327 156.815 0 
+Creating epithelial (type=0) at 86.4571 2.11287 0 
+Creating epithelial (type=0) at -223.019 -135.899 0 
+Creating epithelial (type=0) at -11.1921 114.308 0 
+Creating epithelial (type=0) at 205.662 98.5209 0 
+Creating epithelial_infected (type=1) at 125.893 -110.384 0 
+Creating epithelial_infected (type=1) at -122.614 221.232 0 
+Creating epithelial_infected (type=1) at 200.783 248.023 0 
+Creating epithelial_infected (type=1) at 123.054 -103.228 0 
+Creating epithelial_infected (type=1) at 61.2 -30.3162 0 
+Creating epithelial_infected (type=1) at -178.018 19.897 0 
+Creating epithelial_infected (type=1) at -215.873 -42.2084 0 
+Creating epithelial_infected (type=1) at -84.3005 30.4723 0 
+Creating epithelial_infected (type=1) at 118.84 160.252 0 
+Creating epithelial_infected (type=1) at 35.2172 -182.218 0 
+Creating epithelial_infected (type=1) at -15.8157 -14.2832 0 
+Creating epithelial_infected (type=1) at -207.893 9.64789 0 
+Creating epithelial_infected (type=1) at 117.115 -7.74265 0 
+Creating epithelial_infected (type=1) at 223.775 -159.262 0 
+Creating epithelial_infected (type=1) at -38.4373 -189.367 0 
+Creating epithelial_infected (type=1) at 52.7517 -54.9307 0 
+Creating epithelial_infected (type=1) at -113.315 -209.655 0 
+Creating epithelial_infected (type=1) at 78.7103 68.2899 0 
+Creating epithelial_infected (type=1) at -26.1201 -171.821 0 
+Creating epithelial_infected (type=1) at -90.9314 -64.3414 0 
+Creating macrophage (type=2) at -112.043 -55.3095 0 
+Creating macrophage (type=2) at 154.432 223.523 0 
+Creating macrophage (type=2) at -102.626 101.521 0 
+Creating macrophage (type=2) at -201.524 160.552 0 
+Creating macrophage (type=2) at -24.7422 213.777 0 
+Creating macrophage (type=2) at -67.069 176.266 0 
+Creating macrophage (type=2) at -7.79373 -34.6631 0 
+Creating macrophage (type=2) at -173.292 -99.4087 0 
+Creating macrophage (type=2) at 137.957 -64.2796 0 
+Creating macrophage (type=2) at -3.71403 83.342 0 
+Done! 
+
+Copying ./config/cells.csv to output folder.
+Copy command: cp ./config/cells.csv local_runs/physicell-restart-repro_20260810_172829/straight/output/cells.csv
+Using PhysiCell version 1.14.2
+	Please cite DOI: 10.1371/journal.pcbi.1005991
+	Project website: http://physicell.org
+
+See ALL_CITATIONS.txt for this list.
+current simulated time: 0 min (max: 360 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 1e-05 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 1.4e-05 seconds 
+
+
+Using method diffusion_decay_solver__constant_coefficients_LOD_2D (2D LOD with Thomas Algorithm) ... 
+
+current simulated time: 60 min (max: 360 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.252385 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.252403 seconds 
+
+current simulated time: 120 min (max: 360 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.245071 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.497478 seconds 
+
+current simulated time: 180 min (max: 360 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.247253 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.744735 seconds 
+
+current simulated time: 240 min (max: 360 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.244316 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.989054 seconds 
+
+current simulated time: 300 min (max: 360 min)
+total agents: 282
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.247022 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 1.23608 seconds 
+
+current simulated time: 360 min (max: 360 min)
+total agents: 281
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.251562 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 1.48764 seconds 
+
+
+Total simulation runtime: 
+0 days, 0 hours, 0 minutes, and 1.49431 seconds Using config file local_runs/physicell-restart-repro_20260810_172829/split/PhysiCell_settings.xml ... 
+Using counter-based RNG mode
+Setting up RNG with seed 17
+0
+dc? 0
+User parameters in XML config file: 
+Bool parameters:: 
+
+Int parameters:: 
+number_of_cells: 0 [none]
+
+Double parameters:: 
+
+String parameters:: 
+
+
+which boundaries?
+0 0 0 0 0 0
+
+Microenvironment summary: microenvironment: 
+
+Mesh information: 
+type: uniform Cartesian
+Domain: [-250,250] micron x [-250,250] micron x [-10,10] micron
+   resolution: dx = 20 micron
+   voxels: 625
+   voxel faces: 0
+   volume: 5e+06 cubic micron
+Densities: (2 total)
+   virus:
+     units: dimensionless
+     diffusion coefficient: 1000 micron^2 / min
+     decay rate: 0 min^-1
+     diffusion length scale: 3.16228e+07 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+   interferon:
+     units: dimensionless
+     diffusion coefficient: 10000 micron^2 / min
+     decay rate: 10 min^-1
+     diffusion length scale: 31.6228 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+
+virtual_wall_at_domain_edge: enabled
+Pre-processing type 0 named epithelial
+Pre-processing type 1 named epithelial_infected
+Pre-processing type 2 named macrophage
+Processing epithelial ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+  --------- attachment_elastic_constant = 0.01
+Processing epithelial_infected ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to epithelial_infected
+  --------- attachment_elastic_constant = 0.01
+Processing macrophage ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to macrophage
+  --------- attachment_elastic_constant = 0.01
+Cells of type macrophage use standard chemotaxis: 
+	 d_bias (before normalization) = 1 * grad(interferon)
+Signals: 
+=======
+0 : virus
+1 : interferon
+2 : intracellular virus
+3 : intracellular interferon
+4 : virus gradient
+5 : interferon gradient
+6 : pressure
+7 : volume
+8 : contact with epithelial
+9 : contact with epithelial_infected
+10 : contact with macrophage
+11 : contact with live cell
+12 : contact with dead cell
+13 : contact with apoptotic cell
+14 : contact with necrotic cell
+15 : contact with other dead cell
+16 : contact with basement membrane
+17 : damage
+18 : damage delivered
+19 : attacking
+20 : dead
+21 : total attack time
+22 : time
+23 : custom:sample
+24 : apoptotic
+25 : necrotic
+
+
+Behaviors: 
+=========
+0 : virus secretion
+1 : interferon secretion
+2 : virus secretion target
+3 : interferon secretion target
+4 : virus uptake
+5 : interferon uptake
+6 : virus export
+7 : interferon export
+8 : cycle entry
+9 : exit from cycle phase 1
+10 : exit from cycle phase 2
+11 : exit from cycle phase 3
+12 : exit from cycle phase 4
+13 : exit from cycle phase 5
+14 : apoptosis
+15 : necrosis
+16 : migration speed
+17 : migration bias
+18 : migration persistence time
+19 : chemotactic response to virus
+20 : chemotactic response to interferon
+21 : cell-cell adhesion
+22 : cell-cell adhesion elastic constant
+23 : adhesive affinity to epithelial
+24 : adhesive affinity to epithelial_infected
+25 : adhesive affinity to macrophage
+26 : relative maximum adhesion distance
+27 : cell-cell repulsion
+28 : cell-BM adhesion
+29 : cell-BM repulsion
+30 : phagocytose apoptotic cell
+31 : phagocytose necrotic cell
+32 : phagocytose other dead cell
+33 : phagocytose epithelial
+34 : phagocytose epithelial_infected
+35 : phagocytose macrophage
+36 : attack epithelial
+37 : attack epithelial_infected
+38 : attack macrophage
+39 : fuse to epithelial
+40 : fuse to epithelial_infected
+41 : fuse to macrophage
+42 : transition to epithelial
+43 : transition to epithelial_infected
+44 : transition to macrophage
+45 : asymmetric division to epithelial
+46 : asymmetric division to epithelial_infected
+47 : asymmetric division to macrophage
+48 : custom:sample
+49 : is_movable
+50 : immunogenicity to epithelial
+51 : immunogenicity to epithelial_infected
+52 : immunogenicity to macrophage
+53 : cell attachment rate
+54 : cell detachment rate
+55 : maximum number of cell attachments
+56 : attack damage rate
+57 : attack duration
+58 : damage rate
+59 : damage repair rate
+
+
+ruleset
+	Processing ruleset in ./config/cell_rules.csv ... 
+	Format: CSV (current version 3)
+Processing rules in file ./config/cell_rules.csv ... 
+Adding rule for epithelial cells:
+	virus increases transform to epithelial_infected towards 0.1 with a Hill response, with half-max 0.4 and Hill power 8.
+Adding rule for macrophage cells:
+	volume decreases phagocytose epithelial_infected towards 0 with a Hill response, with half-max 5000 and Hill power 12.
+Done!
+
+Copying ./config/cell_rules.csv to output folder.
+Copy command: cp ./config/cell_rules.csv local_runs/physicell-restart-repro_20260810_172829/split/output/cell_rules.csv
+Behavioral rules for cell type epithelial:
+===================================================
+virus increases transform to epithelial_infected
+
+Behavioral rules for cell type epithelial_infected:
+===================================================
+
+Behavioral rules for cell type macrophage:
+===================================================
+volume decreases phagocytose epithelial_infected
+
+Exporting rules to file local_runs/physicell-restart-repro_20260810_172829/split/output/cell_rules_parsed.csv (v3 format) ... 
+Done!
+
+0 :: type:0 name: epithelial
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+		 contact function: true
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 1 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 1 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+1 :: type:1 name: epithelial_infected
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration 1388.89 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 5.31667e-05 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+2 :: type:2 name: macrophage
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: true in 2D)
+		speed: 1 micron/min
+		bias: 0.15 
+		persistence time: 5 min
+		chemotaxis (enabled: true)
+			along 1 * grad(interferon) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+Placing cells of type epithelial ... 
+Placing cells of type epithelial_infected ... 
+Placing cells of type macrophage ... 
+
+Loading cells from CSV file ./config/cells.csv ... 
+Loading cells from detailed (v2) CSV file ./config/cells.csv ... 
+Creating epithelial (type=0) at 103.416 -173.35 0 
+Creating epithelial (type=0) at 82.3826 214.238 0 
+Creating epithelial (type=0) at 218.34 222.15 0 
+Creating epithelial (type=0) at -235.173 88.0577 0 
+Creating epithelial (type=0) at 106.199 228.854 0 
+Creating epithelial (type=0) at -116.319 65.5686 0 
+Creating epithelial (type=0) at -191.712 147.701 0 
+Creating epithelial (type=0) at -128.798 -140.536 0 
+Creating epithelial (type=0) at 132.383 5.25923 0 
+Creating epithelial (type=0) at -134.798 -121.053 0 
+Creating epithelial (type=0) at -249.212 80.0747 0 
+Creating epithelial (type=0) at -101.429 86.8221 0 
+Creating epithelial (type=0) at -67.0118 -13.84 0 
+Creating epithelial (type=0) at -191.588 -205.974 0 
+Creating epithelial (type=0) at -231.165 -29.2661 0 
+Creating epithelial (type=0) at -120.623 -2.51175 0 
+Creating epithelial (type=0) at -95.9023 178.674 0 
+Creating epithelial (type=0) at 54.4249 -32.6586 0 
+Creating epithelial (type=0) at 195.118 20.0159 0 
+Creating epithelial (type=0) at 201.906 -228.785 0 
+Creating epithelial (type=0) at 195.712 -199.771 0 
+Creating epithelial (type=0) at -181.791 -38.9231 0 
+Creating epithelial (type=0) at -46.7268 249.64 0 
+Creating epithelial (type=0) at 210.404 -225.408 0 
+Creating epithelial (type=0) at 62.5897 -222.068 0 
+Creating epithelial (type=0) at 201.242 -67.1497 0 
+Creating epithelial (type=0) at -125.696 110.517 0 
+Creating epithelial (type=0) at -2.12389 -178.254 0 
+Creating epithelial (type=0) at -238.794 80.8812 0 
+Creating epithelial (type=0) at 89.0485 -140.029 0 
+Creating epithelial (type=0) at -1.46618 220.315 0 
+Creating epithelial (type=0) at -67.6709 142.23 0 
+Creating epithelial (type=0) at -21.6549 -102.576 0 
+Creating epithelial (type=0) at 197.628 75.4156 0 
+Creating epithelial (type=0) at -68.0788 62.9996 0 
+Creating epithelial (type=0) at -149.098 201.777 0 
+Creating epithelial (type=0) at 134.215 -77.088 0 
+Creating epithelial (type=0) at 9.08519 182.123 0 
+Creating epithelial (type=0) at -181.367 101.592 0 
+Creating epithelial (type=0) at -42.9195 -173.22 0 
+Creating epithelial (type=0) at 34.5994 -131.168 0 
+Creating epithelial (type=0) at -146.842 112.451 0 
+Creating epithelial (type=0) at 223.687 102.65 0 
+Creating epithelial (type=0) at -214.745 216.249 0 
+Creating epithelial (type=0) at 104.492 80.1419 0 
+Creating epithelial (type=0) at -110.463 186.613 0 
+Creating epithelial (type=0) at 186.111 32.5795 0 
+Creating epithelial (type=0) at 15.8134 214.686 0 
+Creating epithelial (type=0) at -131.895 -58.2969 0 
+Creating epithelial (type=0) at -4.03116 87.9275 0 
+Creating epithelial (type=0) at -54.4452 -200.803 0 
+Creating epithelial (type=0) at -88.8824 -73.6753 0 
+Creating epithelial (type=0) at 75.6919 204.491 0 
+Creating epithelial (type=0) at -225.818 58.0196 0 
+Creating epithelial (type=0) at -103.777 109.445 0 
+Creating epithelial (type=0) at -18.8818 -106.917 0 
+Creating epithelial (type=0) at 22.4252 -201.815 0 
+Creating epithelial (type=0) at -86.1491 140.791 0 
+Creating epithelial (type=0) at 234.612 28.3109 0 
+Creating epithelial (type=0) at 248.641 -18.5187 0 
+Creating epithelial (type=0) at 139.47 21.6144 0 
+Creating epithelial (type=0) at -143.079 -71.7117 0 
+Creating epithelial (type=0) at 71.2966 -226.439 0 
+Creating epithelial (type=0) at -82.0638 217.506 0 
+Creating epithelial (type=0) at 71.8144 -113.354 0 
+Creating epithelial (type=0) at 120.475 -78.984 0 
+Creating epithelial (type=0) at -201.273 -137.636 0 
+Creating epithelial (type=0) at 79.2283 71.3949 0 
+Creating epithelial (type=0) at 131.704 27.6358 0 
+Creating epithelial (type=0) at 199.923 -106.58 0 
+Creating epithelial (type=0) at -13.0181 198.886 0 
+Creating epithelial (type=0) at 233.126 -177.446 0 
+Creating epithelial (type=0) at -241.443 202.776 0 
+Creating epithelial (type=0) at -101.25 -22.2524 0 
+Creating epithelial (type=0) at -39.1323 154.78 0 
+Creating epithelial (type=0) at -41.7375 21.3521 0 
+Creating epithelial (type=0) at 112.213 -17.9338 0 
+Creating epithelial (type=0) at -195.323 81.7517 0 
+Creating epithelial (type=0) at -158.472 227.251 0 
+Creating epithelial (type=0) at -75.8411 44.9128 0 
+Creating epithelial (type=0) at -20.7286 -85.0557 0 
+Creating epithelial (type=0) at 47.7764 -66.3969 0 
+Creating epithelial (type=0) at 116.372 -232.933 0 
+Creating epithelial (type=0) at 127.496 225.19 0 
+Creating epithelial (type=0) at 224.059 -0.914078 0 
+Creating epithelial (type=0) at 49.8929 160.842 0 
+Creating epithelial (type=0) at 200.478 -120.767 0 
+Creating epithelial (type=0) at 53.8398 43.1893 0 
+Creating epithelial (type=0) at -102.987 -12.1161 0 
+Creating epithelial (type=0) at -9.88938 162.288 0 
+Creating epithelial (type=0) at 23.38 32.1886 0 
+Creating epithelial (type=0) at 191.576 77.5085 0 
+Creating epithelial (type=0) at -11.7411 -190.824 0 
+Creating epithelial (type=0) at -5.03043 -118.443 0 
+Creating epithelial (type=0) at -89.9562 -169.325 0 
+Creating epithelial (type=0) at -99.9299 -160.528 0 
+Creating epithelial (type=0) at -90.5454 -117.704 0 
+Creating epithelial (type=0) at 103.336 -109.012 0 
+Creating epithelial (type=0) at -9.70324 134.152 0 
+Creating epithelial (type=0) at -75.802 117.676 0 
+Creating epithelial (type=0) at -60.1781 20.8448 0 
+Creating epithelial (type=0) at -227.894 155.377 0 
+Creating epithelial (type=0) at -191.692 94.2027 0 
+Creating epithelial (type=0) at 52.058 201.476 0 
+Creating epithelial (type=0) at -216.411 19.6341 0 
+Creating epithelial (type=0) at -204.198 -198.166 0 
+Creating epithelial (type=0) at 246.08 38.0571 0 
+Creating epithelial (type=0) at -146.692 209.03 0 
+Creating epithelial (type=0) at -165.906 -98.7018 0 
+Creating epithelial (type=0) at -95.7647 -5.08527 0 
+Creating epithelial (type=0) at -131.814 -120.949 0 
+Creating epithelial (type=0) at -61.7414 -227.706 0 
+Creating epithelial (type=0) at -194.629 150.239 0 
+Creating epithelial (type=0) at 45.7307 108.109 0 
+Creating epithelial (type=0) at -45.6563 -159.351 0 
+Creating epithelial (type=0) at 191.277 121.046 0 
+Creating epithelial (type=0) at -154.646 21.4486 0 
+Creating epithelial (type=0) at -31.7757 148.121 0 
+Creating epithelial (type=0) at 222.437 50.3498 0 
+Creating epithelial (type=0) at 16.7478 61.1863 0 
+Creating epithelial (type=0) at -229.571 47.8193 0 
+Creating epithelial (type=0) at -16.4575 -142.974 0 
+Creating epithelial (type=0) at -219.866 120.499 0 
+Creating epithelial (type=0) at 236.281 115.217 0 
+Creating epithelial (type=0) at 184.635 -156.565 0 
+Creating epithelial (type=0) at -33.1435 -66.2041 0 
+Creating epithelial (type=0) at -54.7648 154.453 0 
+Creating epithelial (type=0) at -222.555 205.69 0 
+Creating epithelial (type=0) at 145.242 -102.733 0 
+Creating epithelial (type=0) at -12.9915 -114.563 0 
+Creating epithelial (type=0) at 221.708 187.431 0 
+Creating epithelial (type=0) at -192.609 125.36 0 
+Creating epithelial (type=0) at -192.806 230.556 0 
+Creating epithelial (type=0) at -151.268 -121.601 0 
+Creating epithelial (type=0) at -135.44 191.539 0 
+Creating epithelial (type=0) at 33.8792 -28.1523 0 
+Creating epithelial (type=0) at 101.659 198.666 0 
+Creating epithelial (type=0) at 127.278 152.914 0 
+Creating epithelial (type=0) at -228.064 -61.1789 0 
+Creating epithelial (type=0) at -243.013 -27.5044 0 
+Creating epithelial (type=0) at 110.598 135.969 0 
+Creating epithelial (type=0) at -217.2 -108.512 0 
+Creating epithelial (type=0) at 132.983 11.7653 0 
+Creating epithelial (type=0) at 203.103 -228.585 0 
+Creating epithelial (type=0) at 138.085 10.9703 0 
+Creating epithelial (type=0) at 47.6034 -0.100386 0 
+Creating epithelial (type=0) at 96.5591 88.7488 0 
+Creating epithelial (type=0) at -5.85824 218.752 0 
+Creating epithelial (type=0) at -151.503 -13.3941 0 
+Creating epithelial (type=0) at 126.018 -70.8768 0 
+Creating epithelial (type=0) at -19.4985 123.195 0 
+Creating epithelial (type=0) at 121.867 159.847 0 
+Creating epithelial (type=0) at 221.938 228.432 0 
+Creating epithelial (type=0) at -7.80339 -131.649 0 
+Creating epithelial (type=0) at 247.337 163.727 0 
+Creating epithelial (type=0) at 133.022 175.717 0 
+Creating epithelial (type=0) at 184.538 143.373 0 
+Creating epithelial (type=0) at -129.623 58.5144 0 
+Creating epithelial (type=0) at -133.404 -99.0693 0 
+Creating epithelial (type=0) at -66.9436 117.696 0 
+Creating epithelial (type=0) at 10.5501 136.115 0 
+Creating epithelial (type=0) at -236.444 218.841 0 
+Creating epithelial (type=0) at -212.4 93.3018 0 
+Creating epithelial (type=0) at 225.227 -158.317 0 
+Creating epithelial (type=0) at 19.6744 -100.696 0 
+Creating epithelial (type=0) at 43.6967 -140.288 0 
+Creating epithelial (type=0) at 243.968 105.952 0 
+Creating epithelial (type=0) at -134.145 15.402 0 
+Creating epithelial (type=0) at -62.4754 172.654 0 
+Creating epithelial (type=0) at 54.2036 -242.667 0 
+Creating epithelial (type=0) at 111.672 206.284 0 
+Creating epithelial (type=0) at 45.4521 178.53 0 
+Creating epithelial (type=0) at 103.944 91.9271 0 
+Creating epithelial (type=0) at -166.446 115.026 0 
+Creating epithelial (type=0) at 224.187 56.8835 0 
+Creating epithelial (type=0) at -18.7857 161.189 0 
+Creating epithelial (type=0) at -64.0053 -29.0684 0 
+Creating epithelial (type=0) at 151.001 -249.726 0 
+Creating epithelial (type=0) at 64.274 91.8194 0 
+Creating epithelial (type=0) at 95.8836 -162.697 0 
+Creating epithelial (type=0) at -9.59097 -128.187 0 
+Creating epithelial (type=0) at -3.19136 -111.685 0 
+Creating epithelial (type=0) at 124.081 169.665 0 
+Creating epithelial (type=0) at -201.869 99.3228 0 
+Creating epithelial (type=0) at -19.5846 212.579 0 
+Creating epithelial (type=0) at -208.223 32.4457 0 
+Creating epithelial (type=0) at 81.7355 -232.612 0 
+Creating epithelial (type=0) at 28.2145 -205.144 0 
+Creating epithelial (type=0) at -14.0955 126.452 0 
+Creating epithelial (type=0) at 153.171 -136.904 0 
+Creating epithelial (type=0) at 29.8179 125.049 0 
+Creating epithelial (type=0) at -87.7439 98.4205 0 
+Creating epithelial (type=0) at -247.304 11.6712 0 
+Creating epithelial (type=0) at -175.984 -102.232 0 
+Creating epithelial (type=0) at -112.4 126.974 0 
+Creating epithelial (type=0) at -165.948 180.154 0 
+Creating epithelial (type=0) at -13.7891 -9.42435 0 
+Creating epithelial (type=0) at 186.578 42.1498 0 
+Creating epithelial (type=0) at -176.374 -98.5853 0 
+Creating epithelial (type=0) at -168.782 182.67 0 
+Creating epithelial (type=0) at 210 -223.69 0 
+Creating epithelial (type=0) at 2.94497 -70.2685 0 
+Creating epithelial (type=0) at -226.009 167.563 0 
+Creating epithelial (type=0) at 52.8021 44.7103 0 
+Creating epithelial (type=0) at 112.102 186.105 0 
+Creating epithelial (type=0) at -141.466 172.656 0 
+Creating epithelial (type=0) at -110.109 -187.667 0 
+Creating epithelial (type=0) at 245.899 -10.9617 0 
+Creating epithelial (type=0) at 5.97105 83.1725 0 
+Creating epithelial (type=0) at 172.286 -50.0386 0 
+Creating epithelial (type=0) at 36.8633 203.079 0 
+Creating epithelial (type=0) at -167.346 160.57 0 
+Creating epithelial (type=0) at -125.09 69.3567 0 
+Creating epithelial (type=0) at -85.5835 -140.339 0 
+Creating epithelial (type=0) at -144.469 -241.173 0 
+Creating epithelial (type=0) at -132.469 -120.606 0 
+Creating epithelial (type=0) at -77.9258 209.46 0 
+Creating epithelial (type=0) at 148.246 -169.531 0 
+Creating epithelial (type=0) at 69.3146 -187.698 0 
+Creating epithelial (type=0) at 7.76422 -190.508 0 
+Creating epithelial (type=0) at 91.688 111.818 0 
+Creating epithelial (type=0) at 230.577 246.381 0 
+Creating epithelial (type=0) at 187.06 -34.9301 0 
+Creating epithelial (type=0) at -135.597 -35.2815 0 
+Creating epithelial (type=0) at 158.462 -52.163 0 
+Creating epithelial (type=0) at -40.9829 -75.3078 0 
+Creating epithelial (type=0) at 185.409 165.593 0 
+Creating epithelial (type=0) at 106.339 187.094 0 
+Creating epithelial (type=0) at -49.1103 -21.9294 0 
+Creating epithelial (type=0) at -156.175 94.5062 0 
+Creating epithelial (type=0) at -177.191 81.1096 0 
+Creating epithelial (type=0) at 200.826 -129.555 0 
+Creating epithelial (type=0) at -3.25255 -122.304 0 
+Creating epithelial (type=0) at 145.356 -54.8301 0 
+Creating epithelial (type=0) at -0.179215 -41.1313 0 
+Creating epithelial (type=0) at 30.763 -78.8042 0 
+Creating epithelial (type=0) at -213.642 5.22738 0 
+Creating epithelial (type=0) at 107.877 128.986 0 
+Creating epithelial (type=0) at -141.702 95.2867 0 
+Creating epithelial (type=0) at 214.182 -83.9865 0 
+Creating epithelial (type=0) at 103.366 219.14 0 
+Creating epithelial (type=0) at -172.966 217.275 0 
+Creating epithelial (type=0) at 116.172 -153.635 0 
+Creating epithelial (type=0) at 3.40996 174.498 0 
+Creating epithelial (type=0) at 105.28 57.8372 0 
+Creating epithelial (type=0) at 49.5327 156.815 0 
+Creating epithelial (type=0) at 86.4571 2.11287 0 
+Creating epithelial (type=0) at -223.019 -135.899 0 
+Creating epithelial (type=0) at -11.1921 114.308 0 
+Creating epithelial (type=0) at 205.662 98.5209 0 
+Creating epithelial_infected (type=1) at 125.893 -110.384 0 
+Creating epithelial_infected (type=1) at -122.614 221.232 0 
+Creating epithelial_infected (type=1) at 200.783 248.023 0 
+Creating epithelial_infected (type=1) at 123.054 -103.228 0 
+Creating epithelial_infected (type=1) at 61.2 -30.3162 0 
+Creating epithelial_infected (type=1) at -178.018 19.897 0 
+Creating epithelial_infected (type=1) at -215.873 -42.2084 0 
+Creating epithelial_infected (type=1) at -84.3005 30.4723 0 
+Creating epithelial_infected (type=1) at 118.84 160.252 0 
+Creating epithelial_infected (type=1) at 35.2172 -182.218 0 
+Creating epithelial_infected (type=1) at -15.8157 -14.2832 0 
+Creating epithelial_infected (type=1) at -207.893 9.64789 0 
+Creating epithelial_infected (type=1) at 117.115 -7.74265 0 
+Creating epithelial_infected (type=1) at 223.775 -159.262 0 
+Creating epithelial_infected (type=1) at -38.4373 -189.367 0 
+Creating epithelial_infected (type=1) at 52.7517 -54.9307 0 
+Creating epithelial_infected (type=1) at -113.315 -209.655 0 
+Creating epithelial_infected (type=1) at 78.7103 68.2899 0 
+Creating epithelial_infected (type=1) at -26.1201 -171.821 0 
+Creating epithelial_infected (type=1) at -90.9314 -64.3414 0 
+Creating macrophage (type=2) at -112.043 -55.3095 0 
+Creating macrophage (type=2) at 154.432 223.523 0 
+Creating macrophage (type=2) at -102.626 101.521 0 
+Creating macrophage (type=2) at -201.524 160.552 0 
+Creating macrophage (type=2) at -24.7422 213.777 0 
+Creating macrophage (type=2) at -67.069 176.266 0 
+Creating macrophage (type=2) at -7.79373 -34.6631 0 
+Creating macrophage (type=2) at -173.292 -99.4087 0 
+Creating macrophage (type=2) at 137.957 -64.2796 0 
+Creating macrophage (type=2) at -3.71403 83.342 0 
+Done! 
+
+Copying ./config/cells.csv to output folder.
+Copy command: cp ./config/cells.csv local_runs/physicell-restart-repro_20260810_172829/split/output/cells.csv
+Using PhysiCell version 1.14.2
+	Please cite DOI: 10.1371/journal.pcbi.1005991
+	Project website: http://physicell.org
+
+See ALL_CITATIONS.txt for this list.
+current simulated time: 0 min (max: 240 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 1.1e-05 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 1.5e-05 seconds 
+
+
+Using method diffusion_decay_solver__constant_coefficients_LOD_2D (2D LOD with Thomas Algorithm) ... 
+
+current simulated time: 60 min (max: 240 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.250261 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.25028 seconds 
+
+current simulated time: 120 min (max: 240 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.2457 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.495984 seconds 
+
+current simulated time: 180 min (max: 240 min)
+total agents: 279
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.249163 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.74515 seconds 
+
+current simulated time: 240 min (max: 240 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.270191 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 1.01534 seconds 
+
+
+Total simulation runtime: 
+0 days, 0 hours, 0 minutes, and 1.02215 seconds Using config file local_runs/physicell-restart-repro_20260810_172829/split/PhysiCell_settings.xml ... 
+Using counter-based RNG mode
+Setting up RNG with seed 17
+0
+dc? 0
+User parameters in XML config file: 
+Bool parameters:: 
+
+Int parameters:: 
+number_of_cells: 0 [none]
+
+Double parameters:: 
+
+String parameters:: 
+
+
+which boundaries?
+0 0 0 0 0 0
+
+Microenvironment summary: microenvironment: 
+
+Mesh information: 
+type: uniform Cartesian
+Domain: [-250,250] micron x [-250,250] micron x [-10,10] micron
+   resolution: dx = 20 micron
+   voxels: 625
+   voxel faces: 0
+   volume: 5e+06 cubic micron
+Densities: (2 total)
+   virus:
+     units: dimensionless
+     diffusion coefficient: 1000 micron^2 / min
+     decay rate: 0 min^-1
+     diffusion length scale: 3.16228e+07 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+   interferon:
+     units: dimensionless
+     diffusion coefficient: 10000 micron^2 / min
+     decay rate: 10 min^-1
+     diffusion length scale: 31.6228 micron
+     initial condition: 0 dimensionless
+     boundary condition: 0 dimensionless (enabled: false)
+
+virtual_wall_at_domain_edge: enabled
+Pre-processing type 0 named epithelial
+Pre-processing type 1 named epithelial_infected
+Pre-processing type 2 named macrophage
+Processing epithelial ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+  --------- attachment_elastic_constant = 0.01
+Processing epithelial_infected ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to epithelial_infected
+  --------- attachment_elastic_constant = 0.01
+Processing macrophage ... 
+Note: setting cell definition to 2D based on microenvironment domain settings ... 
+copying data ... 
+epithelial to macrophage
+  --------- attachment_elastic_constant = 0.01
+Cells of type macrophage use standard chemotaxis: 
+	 d_bias (before normalization) = 1 * grad(interferon)
+Signals: 
+=======
+0 : virus
+1 : interferon
+2 : intracellular virus
+3 : intracellular interferon
+4 : virus gradient
+5 : interferon gradient
+6 : pressure
+7 : volume
+8 : contact with epithelial
+9 : contact with epithelial_infected
+10 : contact with macrophage
+11 : contact with live cell
+12 : contact with dead cell
+13 : contact with apoptotic cell
+14 : contact with necrotic cell
+15 : contact with other dead cell
+16 : contact with basement membrane
+17 : damage
+18 : damage delivered
+19 : attacking
+20 : dead
+21 : total attack time
+22 : time
+23 : custom:sample
+24 : apoptotic
+25 : necrotic
+
+
+Behaviors: 
+=========
+0 : virus secretion
+1 : interferon secretion
+2 : virus secretion target
+3 : interferon secretion target
+4 : virus uptake
+5 : interferon uptake
+6 : virus export
+7 : interferon export
+8 : cycle entry
+9 : exit from cycle phase 1
+10 : exit from cycle phase 2
+11 : exit from cycle phase 3
+12 : exit from cycle phase 4
+13 : exit from cycle phase 5
+14 : apoptosis
+15 : necrosis
+16 : migration speed
+17 : migration bias
+18 : migration persistence time
+19 : chemotactic response to virus
+20 : chemotactic response to interferon
+21 : cell-cell adhesion
+22 : cell-cell adhesion elastic constant
+23 : adhesive affinity to epithelial
+24 : adhesive affinity to epithelial_infected
+25 : adhesive affinity to macrophage
+26 : relative maximum adhesion distance
+27 : cell-cell repulsion
+28 : cell-BM adhesion
+29 : cell-BM repulsion
+30 : phagocytose apoptotic cell
+31 : phagocytose necrotic cell
+32 : phagocytose other dead cell
+33 : phagocytose epithelial
+34 : phagocytose epithelial_infected
+35 : phagocytose macrophage
+36 : attack epithelial
+37 : attack epithelial_infected
+38 : attack macrophage
+39 : fuse to epithelial
+40 : fuse to epithelial_infected
+41 : fuse to macrophage
+42 : transition to epithelial
+43 : transition to epithelial_infected
+44 : transition to macrophage
+45 : asymmetric division to epithelial
+46 : asymmetric division to epithelial_infected
+47 : asymmetric division to macrophage
+48 : custom:sample
+49 : is_movable
+50 : immunogenicity to epithelial
+51 : immunogenicity to epithelial_infected
+52 : immunogenicity to macrophage
+53 : cell attachment rate
+54 : cell detachment rate
+55 : maximum number of cell attachments
+56 : attack damage rate
+57 : attack duration
+58 : damage rate
+59 : damage repair rate
+
+
+ruleset
+	Processing ruleset in ./config/cell_rules.csv ... 
+	Format: CSV (current version 3)
+Processing rules in file ./config/cell_rules.csv ... 
+Adding rule for epithelial cells:
+	virus increases transform to epithelial_infected towards 0.1 with a Hill response, with half-max 0.4 and Hill power 8.
+Adding rule for macrophage cells:
+	volume decreases phagocytose epithelial_infected towards 0 with a Hill response, with half-max 5000 and Hill power 12.
+Done!
+
+Copying ./config/cell_rules.csv to output folder.
+Copy command: cp ./config/cell_rules.csv local_runs/physicell-restart-repro_20260810_172829/split/output/cell_rules.csv
+Behavioral rules for cell type epithelial:
+===================================================
+virus increases transform to epithelial_infected
+
+Behavioral rules for cell type epithelial_infected:
+===================================================
+
+Behavioral rules for cell type macrophage:
+===================================================
+volume decreases phagocytose epithelial_infected
+
+Exporting rules to file local_runs/physicell-restart-repro_20260810_172829/split/output/cell_rules_parsed.csv (v3 format) ... 
+Done!
+
+0 :: type:0 name: epithelial
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: true
+		 phenotype rule: true
+		 volume update function: true
+		 mechanics function: true
+		 contact function: true
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 1 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 1 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+1 :: type:1 name: epithelial_infected
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration 1388.89 min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 5.31667e-05 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: false
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: false in 2D)
+		speed: 1 micron/min
+		bias: 0.5 
+		persistence time: 5 min
+		chemotaxis (enabled: false)
+			along 1 * grad(virus) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+2 :: type:2 name: macrophage
+	 cycle model: Live (code=5)
+		Phase 0: Live
+		Cycle transitions: 
+		-----------------
+		Live --> Live w mean duration inf min
+	 death models: 
+		0 : Apoptosis (code=100) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Apoptotic --> Debris w mean duration 515.996 min
+		1 : Necrosis (code=101) with rate 0 1/min
+		death phase transitions: 
+		------------------------
+		Necrotic (swelling) --> Necrotic (lysed) w mean duration 1.11111e-10 min
+		Necrotic (lysed) --> Debris w mean duration 86399.8 min
+	 key functions: 
+		 migration bias rule: true
+		 custom rule: false
+		 phenotype rule: false
+		 volume update function: true
+		 mechanics function: true
+		 contact function: false
+		 cell division function: false
+		 cell division direction function: false
+	motility (enabled: true in 2D)
+		speed: 1 micron/min
+		bias: 0.15 
+		persistence time: 5 min
+		chemotaxis (enabled: true)
+			along 1 * grad(interferon) 
+	mechanics:
+		cell_cell_adhesion_strength: 0.4
+		cell_cell_repulsion_strength: 10
+		rel max adhesion dist: 1.25
+		cell_BM_adhesion_strength: 4
+		cell_BM_repulsion_strength: 100
+		attachment_elastic_constant: 0.01
+		attachment_rate: 0
+		detachment_rate: 0
+	custom data: 
+		sample: 0 dimensionless
+	custom vector data: 
+			NOTE: custom vector data will eventually be merged with custom data
+local_runs/physicell-restart-repro_20260810_172829/split/output/final.xml
+resume_from_MultiCellDS   xml_filepath= local_runs/physicell-restart-repro_20260810_172829/split/output/final.xml
+
+   Success reading current_time
+
+--- resetting PhysiCell_globals.current_time 240.01
+   Success reading PhysiCell_max_basic_agent_ID = 287
+
+Attempting to load the microenvironment from local_runs/physicell-restart-repro_20260810_172829/split/output/final_microenvironment0.mat ... 
+done!
+
+
+   Success!
+
+ --- var_name=ID
+ --- var_name=position
+ --- var_name=total_volume
+ --- var_name=cell_type
+ --- var_name=cycle_model
+ --- var_name=current_phase
+ --- var_name=elapsed_time_in_phase
+ --- var_name=nuclear_volume
+ --- var_name=cytoplasmic_volume
+ --- var_name=fluid_fraction
+ --- var_name=calcified_fraction
+ --- var_name=orientation
+ --- var_name=polarity
+ --- var_name=velocity
+ --- var_name=pressure
+ --- var_name=number_of_nuclei
+ --- var_name=total_attack_time
+ --- var_name=contact_with_basement_membrane
+ --- var_name=current_cycle_phase_exit_rate
+ --- var_name=elapsed_time_in_phase
+ --- var_name=dead
+ --- var_name=current_death_model
+ --- var_name=death_rates
+ --- var_name=cytoplasmic_biomass_change_rate
+ --- var_name=nuclear_biomass_change_rate
+ --- var_name=fluid_change_rate
+ --- var_name=calcification_rate
+ --- var_name=target_solid_cytoplasmic
+ --- var_name=target_solid_nuclear
+ --- var_name=target_fluid_fraction
+ --- var_name=radius
+ --- var_name=nuclear_radius
+ --- var_name=surface_area
+ --- var_name=cell_cell_adhesion_strength
+ --- var_name=cell_BM_adhesion_strength
+ --- var_name=cell_cell_repulsion_strength
+ --- var_name=cell_BM_repulsion_strength
+ --- var_name=cell_adhesion_affinities
+ --- var_name=relative_maximum_adhesion_distance
+ --- var_name=maximum_number_of_attachments
+ --- var_name=attachment_elastic_constant
+ --- var_name=attachment_rate
+ --- var_name=detachment_rate
+ --- var_name=is_motile
+ --- var_name=persistence_time
+ --- var_name=migration_speed
+ --- var_name=migration_bias_direction
+ --- var_name=migration_bias
+ --- var_name=motility_vector
+ --- var_name=chemotaxis_index
+ --- var_name=chemotaxis_direction
+ --- var_name=chemotactic_sensitivities
+ --- var_name=secretion_rates
+ --- var_name=uptake_rates
+ --- var_name=saturation_densities
+ --- var_name=net_export_rates
+ --- var_name=internalized_total_substrates
+ --- var_name=fraction_released_at_death
+ --- var_name=fraction_transferred_when_ingested
+ --- var_name=apoptotic_phagocytosis_rate
+ --- var_name=necrotic_phagocytosis_rate
+ --- var_name=other_dead_phagocytosis_rate
+ --- var_name=live_phagocytosis_rates
+ --- var_name=attack_rates
+ --- var_name=immunogenicities
+ --- var_name=attack_target
+ --- var_name=attack_damage_rate
+ --- var_name=attack_duration
+ --- var_name=attack_total_damage_delivered
+ --- var_name=fusion_rates
+ --- var_name=transformation_rates
+ --- var_name=asymmetric_division_probabilities
+ --- var_name=damage
+ --- var_name=damage_rate
+ --- var_name=damage_repair_rate
+last_var= damage_repair_rate
+var: sample
+  index: 108
+  size: 1
+name: sample, size: 1
+
+reading //cellular_information//cell_populations//custom//simplified_data[@type='matlab']//filename
+
+   Success!
+
+
+ ---> final_cells.mat
+ ---> local_runs/physicell-restart-repro_20260810_172829/split/output/final_cells.mat
+------- recreate_sim_state
+------- number_of_densities= 2
+------- number of cell types= 3
+Reading 280 cells with 109 data points each...
+reading cell data...
+recreate_sim_state--- (*all_cells).size() = 280
+recreate_sim_state: read 280 cells from local_runs/physicell-restart-repro_20260810_172829/split/output/final_cells.mat
+--- resuming max_basic_agent_ID at saved value 287
+Using PhysiCell version 1.14.2
+	Please cite DOI: 10.1371/journal.pcbi.1005991
+	Project website: http://physicell.org
+
+See ALL_CITATIONS.txt for this list.
+
+Using method diffusion_decay_solver__constant_coefficients_LOD_2D (2D LOD with Thomas Algorithm) ... 
+
+current simulated time: 300 min (max: 360 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.212955 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.212957 seconds 
+
+current simulated time: 360 min (max: 360 min)
+total agents: 280
+interval wall time: 0 days, 0 hours, 0 minutes, and 0.226063 seconds 
+total wall time: 0 days, 0 hours, 0 minutes, and 0.439024 seconds 
+
+
+Total simulation runtime: 
+0 days, 0 hours, 0 minutes, and 0.446193 seconds 
+================================================================================
+ Run A (straight through, 0 -> 360.0)
+
+ running: /Users/heberlr/Documents/GitHub/PhysiCell/project local_runs/physicell-restart-repro_20260810_172829/straight/PhysiCell_settings.xml
+
+================================================================================
+ Run B part 1 (0 -> 240.0, checkpoint)
+
+ running: /Users/heberlr/Documents/GitHub/PhysiCell/project local_runs/physicell-restart-repro_20260810_172829/split/PhysiCell_settings.xml
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final.xml
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/initial_mesh0.mat
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final_microenvironment0.mat
+Parsing virus data
+Parsing interferon data
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final_cells.mat
+ checkpoint current_time = 240.01 (target t_mid = 240.0)
+
+================================================================================
+ Run B part 2 (resume from final.xml, 240.0 -> 360.0)
+
+ running: /Users/heberlr/Documents/GitHub/PhysiCell/project local_runs/physicell-restart-repro_20260810_172829/split/PhysiCell_settings.xml local_runs/physicell-restart-repro_20260810_172829/split/output final.xml 5 5
+
+================================================================================
+ Comparing final state at t = 360.0
+ local_runs/physicell-restart-repro_20260810_172829/straight/output/final.svg vs local_runs/physicell-restart-repro_20260810_172829/split/output/final.svg: ERR
+20c20
+<    281 agents
+---
+>    280 agents
+28,29c28,29
+<   <circle cx="354.276" cy="75.4345" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="354.276" cy="75.4345" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="354.477" cy="75.1493" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="354.477" cy="75.1493" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+32,33c32,33
+<   <circle cx="332.848" cy="462.868" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="332.848" cy="462.868" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="333.64" cy="466.388" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="333.64" cy="466.388" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+36,37c36,37
+<   <circle cx="465.03" cy="466.181" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="465.03" cy="466.181" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="465.031" cy="466.183" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="465.031" cy="466.183" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+40,41c40,41
+<   <circle cx="21.8273" cy="344.13" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="21.8273" cy="344.13" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="19.8078" cy="342.484" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="19.8078" cy="342.484" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+44,45c44,45
+<   <circle cx="356.629" cy="476.357" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="356.629" cy="476.357" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="353.891" cy="480.278" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="353.891" cy="480.278" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+48,49c48,49
+<   <circle cx="140.627" cy="312.3" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="140.627" cy="312.3" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="140.959" cy="312.188" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="140.959" cy="312.188" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+52,53c52,53
+<   <circle cx="68.9325" cy="391.22" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="68.9325" cy="391.22" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="69.3188" cy="391.463" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="69.3188" cy="391.463" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+56,57c56,57
+<   <circle cx="118.919" cy="108.85" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="118.919" cy="108.85" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="118.878" cy="108.606" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="118.878" cy="108.606" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+60,61c60,61
+<   <circle cx="380.992" cy="249.894" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="380.992" cy="249.894" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="381.98" cy="248.26" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="381.98" cy="248.26" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+64,65c64,65
+<   <circle cx="111.825" cy="123.229" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="111.825" cy="123.229" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="111.823" cy="123.609" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="111.823" cy="123.609" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+68,69c68,69
+<   <circle cx="9.01007" cy="319.424" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="9.01007" cy="319.424" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="9.38496" cy="318.963" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="9.38496" cy="318.963" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+72,73c72,73
+<   <circle cx="150.031" cy="335.922" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="150.031" cy="335.922" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="149.758" cy="335.655" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="149.758" cy="335.655" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+76,77c76,77
+<   <circle cx="186.11" cy="236.326" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="186.11" cy="236.326" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="186.447" cy="237.306" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="186.447" cy="237.306" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+80,81c80,81
+<   <circle cx="58.9189" cy="43.7122" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="58.9189" cy="43.7122" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="59.2158" cy="43.5283" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="59.2158" cy="43.5283" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+84,85c84,85
+<   <circle cx="21.1903" cy="216.817" r="7.1497" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="21.1903" cy="216.817" r="4.34001" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="24.5381" cy="219.731" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="24.5381" cy="219.731" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+88,89c88,89
+<   <circle cx="128.192" cy="248.085" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="128.192" cy="248.085" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="127.446" cy="248.443" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="127.446" cy="248.443" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+92,93c92,93
+<   <circle cx="144.844" cy="432.136" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="144.844" cy="432.136" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="150.936" cy="431.234" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="150.936" cy="431.234" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+96,97c96,97
+<   <circle cx="299.751" cy="216.074" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="299.751" cy="216.074" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="298.958" cy="217.125" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="298.958" cy="217.125" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+100,101c100,101
+<   <circle cx="446.214" cy="268.83" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="446.214" cy="268.83" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="446.553" cy="268.507" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="446.553" cy="268.507" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+104,105c104,105
+<   <circle cx="440.028" cy="22.0205" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="440.028" cy="22.0205" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="439.525" cy="22.1826" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="439.525" cy="22.1826" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+116,117c116,117
+<   <circle cx="206.446" cy="491.511" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="206.446" cy="491.511" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="206.428" cy="491.59" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="206.428" cy="491.59" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+120,121c120,121
+<   <circle cx="470.755" cy="21.5327" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="470.755" cy="21.5327" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="471.367" cy="21.5338" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="471.367" cy="21.5338" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+124,125c124,125
+<   <circle cx="307.675" cy="30.3045" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="307.675" cy="30.3045" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="307.116" cy="30.5579" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="307.116" cy="30.5579" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+132,133c132,133
+<   <circle cx="123.573" cy="360.989" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="123.573" cy="360.989" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="123.606" cy="360.996" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="123.606" cy="360.996" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+136,137c136,137
+<   <circle cx="247.373" cy="72.998" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="247.373" cy="72.998" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="247.348" cy="73.0081" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="247.348" cy="73.0081" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+140,141c140,141
+<   <circle cx="8.7712" cy="334.995" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="8.7712" cy="334.995" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="8.05439" cy="334.336" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="8.05439" cy="334.336" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+148,149c148,149
+<   <circle cx="255.951" cy="474.291" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="255.951" cy="474.291" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="258.006" cy="475.27" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="258.006" cy="475.27" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+152,153c152,153
+<   <circle cx="181.819" cy="392.626" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="181.819" cy="392.626" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="182.824" cy="391.884" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="182.824" cy="391.884" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+156,157c156,157
+<   <circle cx="221.331" cy="152.857" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="221.331" cy="152.857" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="220.207" cy="153.067" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="220.207" cy="153.067" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+160,161c160,161
+<   <circle cx="452.174" cy="323.844" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="452.174" cy="323.844" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="452.759" cy="323.641" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="452.759" cy="323.641" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+164,165c164,165
+<   <circle cx="181.29" cy="311.687" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="181.29" cy="311.687" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="181.781" cy="312.675" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="181.781" cy="312.675" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+168,169c168,169
+<   <circle cx="100.271" cy="448.041" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="100.271" cy="448.041" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="99.3153" cy="447.612" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="99.3153" cy="447.612" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+172,173c172,173
+<   <circle cx="384.823" cy="170.361" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="384.823" cy="170.361" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="385.247" cy="170.293" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="385.247" cy="170.293" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+176,177c176,177
+<   <circle cx="261.597" cy="435.53" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="261.597" cy="435.53" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="262.134" cy="436.276" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="262.134" cy="436.276" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+180,181c180,181
+<   <circle cx="71.9231" cy="354.734" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="71.9231" cy="354.734" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="71.642" cy="354.688" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="71.642" cy="354.688" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+184,185c184,185
+<   <circle cx="207.66" cy="75.7373" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="207.66" cy="75.7373" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="207.016" cy="75.8847" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="207.016" cy="75.8847" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+188,189c188,189
+<   <circle cx="283.49" cy="119.944" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="283.49" cy="119.944" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="283.104" cy="120.331" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="283.104" cy="120.331" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+192,193c192,193
+<   <circle cx="102.701" cy="360.802" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="102.701" cy="360.802" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="103.041" cy="361.639" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="103.041" cy="361.639" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+196,197c196,197
+<   <circle cx="474.625" cy="353.673" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="474.625" cy="353.673" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="474.381" cy="353.554" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="474.381" cy="353.554" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+200,201c200,201
+<   <circle cx="36.0377" cy="467.293" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="36.0377" cy="467.293" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="36.3646" cy="467.647" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="36.3646" cy="467.647" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+204,205c204,205
+<   <circle cx="355.255" cy="328.386" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="355.255" cy="328.386" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="355.387" cy="327.929" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="355.387" cy="327.929" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+208,209c208,209
+<   <circle cx="131.324" cy="440.974" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="131.324" cy="440.974" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="136.151" cy="438.878" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="136.151" cy="438.878" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+212,213c212,213
+<   <circle cx="434.741" cy="280.016" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="434.741" cy="280.016" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="434.335" cy="279.875" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="434.335" cy="279.875" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+216,217c216,217
+<   <circle cx="267.608" cy="463.329" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="267.608" cy="463.329" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="268.297" cy="462.6" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="268.297" cy="462.6" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+220,221c220,221
+<   <circle cx="112.812" cy="195.061" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="112.812" cy="195.061" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="114.24" cy="197.331" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="114.24" cy="197.331" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+224,225c224,225
+<   <circle cx="246.342" cy="345.502" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="246.342" cy="345.502" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="246.26" cy="344.234" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="246.26" cy="344.234" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+228,229c228,229
+<   <circle cx="197.1" cy="50.3079" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="197.1" cy="50.3079" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="196.4" cy="49.7982" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="196.4" cy="49.7982" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+232,233c232,233
+<   <circle cx="161.641" cy="173.241" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="161.641" cy="173.241" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="161.811" cy="173.166" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="161.811" cy="173.166" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+236,237c236,237
+<   <circle cx="322.768" cy="450.438" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="322.768" cy="450.438" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="324.392" cy="452.606" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="324.392" cy="452.606" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+240,241c240,241
+<   <circle cx="21.7771" cy="313.068" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="21.7771" cy="313.068" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="24.0071" cy="310.849" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="24.0071" cy="310.849" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+244,245c244,245
+<   <circle cx="146.633" cy="364.898" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="146.633" cy="364.898" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="146.841" cy="364.618" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="146.841" cy="364.618" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+248,249c248,249
+<   <circle cx="236.35" cy="147.308" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="236.35" cy="147.308" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="235.797" cy="147.669" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="235.797" cy="147.669" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+252,253c252,253
+<   <circle cx="268.782" cy="49.975" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="268.782" cy="49.975" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="268.574" cy="49.812" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="268.574" cy="49.812" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+256,257c256,257
+<   <circle cx="166.005" cy="390.076" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="166.005" cy="390.076" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="166.925" cy="388.751" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="166.925" cy="388.751" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+260,261c260,261
+<   <circle cx="483.241" cy="276.345" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="483.241" cy="276.345" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="483.039" cy="276.013" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="483.039" cy="276.013" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+268,269c268,269
+<   <circle cx="392.87" cy="276.524" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="392.87" cy="276.524" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="393.69" cy="275.085" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="393.69" cy="275.085" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+272,273c272,273
+<   <circle cx="104.962" cy="181.071" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="104.962" cy="181.071" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="105.184" cy="183.496" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="105.184" cy="183.496" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+276,277c276,277
+<   <circle cx="322.25" cy="23.6451" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="322.25" cy="23.6451" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="322.295" cy="23.7268" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="322.295" cy="23.7268" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+280,281c280,281
+<   <circle cx="170.846" cy="471.963" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="170.846" cy="471.963" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="165.983" cy="470.879" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="165.983" cy="470.879" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+288,289c288,289
+<   <circle cx="369.151" cy="167.023" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="369.151" cy="167.023" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="368.701" cy="167.857" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="368.701" cy="167.857" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+296,297c296,297
+<   <circle cx="330.264" cy="327.735" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="330.264" cy="327.735" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="329.535" cy="327.714" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="329.535" cy="327.714" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+300,301c300,301
+<   <circle cx="377.708" cy="281.617" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="377.708" cy="281.617" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="378.239" cy="281.012" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="378.239" cy="281.012" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+304,305c304,305
+<   <circle cx="449.781" cy="147.045" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="449.781" cy="147.045" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="449.768" cy="147.394" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="449.768" cy="147.394" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+308,309c308,309
+<   <circle cx="239.005" cy="444.574" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="239.005" cy="444.574" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="241.552" cy="445.689" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="241.552" cy="445.689" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+312,313c312,313
+<   <circle cx="483.124" cy="72.5559" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="483.124" cy="72.5559" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="483.124" cy="72.5555" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="483.124" cy="72.5555" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+316,317c316,317
+<   <circle cx="9.23907" cy="452.728" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="9.23907" cy="452.728" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="8.75415" cy="452.445" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="8.75415" cy="452.445" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+320,321c320,321
+<   <circle cx="147.226" cy="225.787" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="147.226" cy="225.787" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="145.739" cy="225.07" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="145.739" cy="225.07" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+324,325c324,325
+<   <circle cx="209.851" cy="407.942" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="209.851" cy="407.942" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="210.277" cy="408.327" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="210.277" cy="408.327" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+328,329c328,329
+<   <circle cx="204.122" cy="271.313" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="204.122" cy="271.313" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="197.709" cy="270.79" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="197.709" cy="270.79" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+332,333c332,333
+<   <circle cx="361.617" cy="228.753" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="361.617" cy="228.753" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="361.336" cy="228.971" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="361.336" cy="228.971" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+336,337c336,337
+<   <circle cx="56.0141" cy="327.155" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="56.0141" cy="327.155" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="53.8572" cy="326.949" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="53.8572" cy="326.949" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+340,341c340,341
+<   <circle cx="92.0163" cy="475.352" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="92.0163" cy="475.352" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="92.2488" cy="476.039" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="92.2488" cy="476.039" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+344,345c344,345
+<   <circle cx="173.963" cy="297.128" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="173.963" cy="297.128" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="173.944" cy="296.363" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="173.944" cy="296.363" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+348,349c348,349
+<   <circle cx="230.013" cy="166.329" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="230.013" cy="166.329" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="230.136" cy="166.645" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="230.136" cy="166.645" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+352,353c352,353
+<   <circle cx="295.76" cy="177.702" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="295.76" cy="177.702" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="296.269" cy="175.247" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="296.269" cy="175.247" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+360,361c360,361
+<   <circle cx="371.707" cy="470.957" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="371.707" cy="470.957" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="369.744" cy="473.022" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="369.744" cy="473.022" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+364,365c364,365
+<   <circle cx="475.292" cy="248.67" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="475.292" cy="248.67" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="474.618" cy="248.886" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="474.618" cy="248.886" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+368,369c368,369
+<   <circle cx="301.346" cy="415.813" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="301.346" cy="415.813" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="301.941" cy="415.542" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="301.941" cy="415.542" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+372,373c372,373
+<   <circle cx="450.405" cy="131.033" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="450.405" cy="131.033" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="450.419" cy="130.684" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="450.419" cy="130.684" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+380,381c380,381
+<   <circle cx="142.631" cy="241.138" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="142.631" cy="241.138" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="142.285" cy="241.173" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="142.285" cy="241.173" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+384,385c384,385
+<   <circle cx="241.79" cy="410.227" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="241.79" cy="410.227" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="242.505" cy="409.942" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="242.505" cy="409.942" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+395,397c395,397
+<    <g id="cell92" type="epithelial_infected" dead="false" >
+<   <circle cx="239.777" cy="58.8888" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="239.777" cy="58.8888" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>    <g id="cell92" type="epithelial" dead="false" >
+>   <circle cx="238.674" cy="58.5504" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="238.674" cy="58.5504" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+400,401c400,401
+<   <circle cx="243.54" cy="132.98" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="243.54" cy="132.98" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="243.725" cy="132.623" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="243.725" cy="132.623" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+408,409c408,409
+<   <circle cx="149.048" cy="90.3737" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="149.048" cy="90.3737" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="148.584" cy="90.7832" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="148.584" cy="90.7832" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+416,417c416,417
+<   <circle cx="353.352" cy="140.997" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="353.352" cy="140.997" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="353.349" cy="140.995" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="353.349" cy="140.995" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+420,421c420,421
+<   <circle cx="243.93" cy="391.521" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="243.93" cy="391.521" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="243.866" cy="393.768" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="243.866" cy="393.768" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+424,425c424,425
+<   <circle cx="169.365" cy="367.237" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="169.365" cy="367.237" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="170.029" cy="367.676" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="170.029" cy="367.676" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+428,429c428,429
+<   <circle cx="188.026" cy="271.288" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="188.026" cy="271.288" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="183.733" cy="266.122" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="183.733" cy="266.122" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+432,433c432,433
+<   <circle cx="20.724" cy="403.518" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="20.724" cy="403.518" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="20.6465" cy="403.178" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="20.6465" cy="403.178" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+436,437c436,437
+<   <circle cx="64.74" cy="340.485" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="64.74" cy="340.485" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="64.6432" cy="339.515" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="64.6432" cy="339.515" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+440,441c440,441
+<   <circle cx="302.438" cy="451.437" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="302.438" cy="451.437" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="303.044" cy="451.372" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="303.044" cy="451.372" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+444,445c444,445
+<   <circle cx="32.6508" cy="269.448" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="32.6508" cy="269.448" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="31.9134" cy="269.338" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="31.9134" cy="269.338" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+448,449c448,449
+<   <circle cx="45.295" cy="52.1481" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="45.295" cy="52.1481" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="44.9981" cy="52.332" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="44.9981" cy="52.332" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+452,453c452,453
+<   <circle cx="491.59" cy="290.023" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="491.59" cy="290.023" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="491.604" cy="290.355" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="491.604" cy="290.355" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+456,457c456,457
+<   <circle cx="103.16" cy="463.828" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="103.16" cy="463.828" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="103.556" cy="463.69" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="103.556" cy="463.69" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+460,461c460,461
+<   <circle cx="87.36" cy="172.673" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="87.36" cy="172.673" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="78.6962" cy="167.125" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="78.6962" cy="167.125" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+464,465c464,465
+<   <circle cx="156.302" cy="249.498" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="156.302" cy="249.498" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="155.877" cy="250.294" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="155.877" cy="250.294" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+468,469c468,469
+<   <circle cx="127.766" cy="122.289" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="127.766" cy="122.289" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="128.594" cy="122.051" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="128.594" cy="122.051" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+471,473c471,473
+<    <g id="cell111" type="epithelial_infected" dead="false" >
+<   <circle cx="188.259" cy="22.2939" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="188.259" cy="22.2939" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>    <g id="cell111" type="epithelial" dead="false" >
+>   <circle cx="188.259" cy="22.2939" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="188.259" cy="22.2939" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+476,477c476,477
+<   <circle cx="52.9295" cy="390.852" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="52.9295" cy="390.852" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="52.5649" cy="391.311" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="52.5649" cy="391.311" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+484,485c484,485
+<   <circle cx="204.196" cy="91.3892" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="204.196" cy="91.3892" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="204.02" cy="92.2442" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="204.02" cy="92.2442" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+492,493c492,493
+<   <circle cx="92.3764" cy="255.707" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="92.3764" cy="255.707" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="92.0213" cy="258.168" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="92.0213" cy="258.168" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+496,497c496,497
+<   <circle cx="220.211" cy="395.678" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="220.211" cy="395.678" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="220.549" cy="395.132" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="220.549" cy="395.132" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+500,501c500,501
+<   <circle cx="471.24" cy="295.877" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="471.24" cy="295.877" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="471.08" cy="295.279" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="471.08" cy="295.279" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+508,509c508,509
+<   <circle cx="18.9807" cy="295.421" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="18.9807" cy="295.421" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="19.3946" cy="294.871" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="19.3946" cy="294.871" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+512,513c512,513
+<   <circle cx="232.533" cy="103.708" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="232.533" cy="103.708" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="232.181" cy="102.475" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="232.181" cy="102.475" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+516,517c516,517
+<   <circle cx="16.8654" cy="364.999" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="16.8654" cy="364.999" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="15.3198" cy="366.977" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="15.3198" cy="366.977" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+520,521c520,521
+<   <circle cx="483.546" cy="367.042" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="483.546" cy="367.042" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="483.668" cy="367.546" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="483.668" cy="367.546" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+528,529c528,529
+<   <circle cx="218.165" cy="185.315" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="218.165" cy="185.315" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="218.393" cy="185.58" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="218.393" cy="185.58" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+532,533c532,533
+<   <circle cx="195.02" cy="401.776" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="195.02" cy="401.776" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="195.398" cy="402.266" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="195.398" cy="402.266" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+536,537c536,537
+<   <circle cx="24.9874" cy="455.688" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="24.9874" cy="455.688" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="25.1993" cy="455.256" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="25.1993" cy="455.256" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+544,545c544,545
+<   <circle cx="227.545" cy="133.919" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="227.545" cy="133.919" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="227.261" cy="133.424" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="227.261" cy="133.424" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+552,553c552,553
+<   <circle cx="57.8561" cy="375.622" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="57.8561" cy="375.622" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="57.6657" cy="375.456" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="57.6657" cy="375.456" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+560,561c560,561
+<   <circle cx="96.1446" cy="126.476" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="96.1446" cy="126.476" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="95.4569" cy="126.618" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="95.4569" cy="126.618" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+564,565c564,565
+<   <circle cx="114.418" cy="440.144" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="114.418" cy="440.144" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="114.586" cy="440.843" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="114.586" cy="440.843" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+568,569c568,569
+<   <circle cx="284.724" cy="221.544" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="284.724" cy="221.544" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="283.26" cy="222.034" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="283.26" cy="222.034" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+572,573c572,573
+<   <circle cx="349.314" cy="446.508" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="349.314" cy="446.508" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="347.676" cy="447.957" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="347.676" cy="447.957" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+576,577c576,577
+<   <circle cx="378.598" cy="394.614" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="378.598" cy="394.614" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="378.999" cy="393.885" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="378.999" cy="393.885" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+583,585c583,585
+<    <g id="cell139" type="epithelial_infected" dead="false" >
+<   <circle cx="8.42323" cy="224.414" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="8.42323" cy="224.414" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>    <g id="cell139" type="epithelial" dead="false" >
+>   <circle cx="8.3811" cy="223.697" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="8.3811" cy="223.697" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+588,589c588,589
+<   <circle cx="363.306" cy="389.781" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="363.306" cy="389.781" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="362.775" cy="390.349" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="362.775" cy="390.349" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+596,597c596,597
+<   <circle cx="377.839" cy="265.621" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="377.839" cy="265.621" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="379.54" cy="264.615" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="379.54" cy="264.615" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+600,601c600,601
+<   <circle cx="455.319" cy="17.2297" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="455.319" cy="17.2297" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="455.346" cy="16.9339" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="455.346" cy="16.9339" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+604,605c604,605
+<   <circle cx="392.992" cy="260.524" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="392.992" cy="260.524" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="395.116" cy="258.6" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="395.116" cy="258.6" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+612,613c612,613
+<   <circle cx="342.497" cy="338.085" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="342.497" cy="338.085" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="342.187" cy="338.31" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="342.187" cy="338.31" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+616,617c616,617
+<   <circle cx="240.4" cy="471.321" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="240.4" cy="471.321" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="241.98" cy="477.003" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="241.98" cy="477.003" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+620,621c620,621
+<   <circle cx="98.4867" cy="236.637" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="98.4867" cy="236.637" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="98.4965" cy="236.606" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="98.4965" cy="236.606" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+624,625c624,625
+<   <circle cx="374.096" cy="182.265" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="374.096" cy="182.265" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="374.316" cy="183.361" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="374.316" cy="183.361" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+628,629c628,629
+<   <circle cx="225.698" cy="368.893" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="225.698" cy="368.893" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="229.484" cy="372.05" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="229.484" cy="372.05" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+632,633c632,633
+<   <circle cx="387.144" cy="406.888" r="7.30216" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="387.144" cy="406.888" r="4.43696" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="388.899" cy="407.231" r="8.3415" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="388.899" cy="407.231" r="5.00892" stroke-width="0.5" stroke="red" fill="red"/>
+636,637c636,637
+<   <circle cx="472.102" cy="480.56" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="472.102" cy="480.56" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="471.884" cy="481.105" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="471.884" cy="481.105" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+640,641c640,641
+<   <circle cx="247.383" cy="109.719" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="247.383" cy="109.719" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="248.04" cy="109.201" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="248.04" cy="109.201" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+648,649c648,649
+<   <circle cx="383.789" cy="424.175" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="383.789" cy="424.175" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="385.287" cy="425.191" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="385.287" cy="425.191" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+656,657c656,657
+<   <circle cx="119.986" cy="302.18" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="119.986" cy="302.18" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="119.872" cy="301.849" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="119.872" cy="301.849" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+660,661c660,661
+<   <circle cx="127.085" cy="154.173" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="127.085" cy="154.173" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="127.347" cy="155.506" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="127.347" cy="155.506" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+664,665c664,665
+<   <circle cx="182.495" cy="375.761" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="182.495" cy="375.761" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="186.36" cy="367.084" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="186.36" cy="367.084" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+668,669c668,669
+<   <circle cx="259.173" cy="386.523" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="259.173" cy="386.523" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="259.527" cy="386.406" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="259.527" cy="386.406" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+672,673c672,673
+<   <circle cx="14.5492" cy="467.847" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="14.5492" cy="467.847" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="14.4953" cy="468.208" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="14.4953" cy="468.208" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+676,677c676,677
+<   <circle cx="23.2323" cy="328.173" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="23.2323" cy="328.173" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="36.1894" cy="335.024" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="36.1894" cy="335.024" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+680,681c680,681
+<   <circle cx="481.217" cy="95.5804" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="481.217" cy="95.5804" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="481.736" cy="95.9181" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="481.736" cy="95.9181" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+684,685c684,685
+<   <circle cx="268.135" cy="149.059" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="268.135" cy="149.059" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="268.663" cy="149.141" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="268.663" cy="149.141" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+688,689c688,689
+<   <circle cx="294.807" cy="108.6" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="294.807" cy="108.6" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="294.862" cy="108.544" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="294.862" cy="108.544" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+692,693c692,693
+<   <circle cx="490.69" cy="352.727" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="490.69" cy="352.727" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="491.041" cy="352.528" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="491.041" cy="352.528" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+696,697c696,697
+<   <circle cx="116.09" cy="265.294" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="116.09" cy="265.294" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="115.795" cy="265.448" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="115.795" cy="265.448" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+700,701c700,701
+<   <circle cx="197.035" cy="417.65" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="197.035" cy="417.65" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="196.039" cy="418.734" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="196.039" cy="418.734" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+708,709c708,709
+<   <circle cx="363.817" cy="457.004" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="363.817" cy="457.004" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="364.837" cy="457.429" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="364.837" cy="457.429" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+716,717c716,717
+<   <circle cx="357.272" cy="344.286" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="357.272" cy="344.286" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="357.721" cy="344.483" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="357.721" cy="344.483" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+720,721c720,721
+<   <circle cx="84.1777" cy="365.056" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="84.1777" cy="365.056" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="84.3396" cy="365.49" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="84.3396" cy="365.49" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+728,729c728,729
+<   <circle cx="225.709" cy="410.71" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="225.709" cy="410.71" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="226.333" cy="411.012" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="226.333" cy="411.012" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+732,733c732,733
+<   <circle cx="187.431" cy="220.344" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="187.431" cy="220.344" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="190.279" cy="217.188" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="190.279" cy="217.188" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+744,745c744,745
+<   <circle cx="345.024" cy="88.5183" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="345.024" cy="88.5183" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="344.823" cy="88.8034" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="344.823" cy="88.8034" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+748,749c748,749
+<   <circle cx="234.747" cy="119.584" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="234.747" cy="119.584" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="234.562" cy="118.784" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="234.562" cy="118.784" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+752,753c752,753
+<   <circle cx="252.342" cy="146.369" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="252.342" cy="146.369" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="252.17" cy="146.896" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="252.17" cy="146.896" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+756,757c756,757
+<   <circle cx="367.681" cy="425.327" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="367.681" cy="425.327" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="367.554" cy="425.189" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="367.554" cy="425.189" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+760,761c760,761
+<   <circle cx="55.8959" cy="353.786" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="55.8959" cy="353.786" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="54.2575" cy="352.203" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="54.2575" cy="352.203" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+764,765c764,765
+<   <circle cx="232.592" cy="458.1" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="232.592" cy="458.1" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="237.866" cy="461.667" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="237.866" cy="461.667" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+772,773c772,773
+<   <circle cx="335.697" cy="14.931" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="335.697" cy="14.931" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="336.211" cy="14.5959" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="336.211" cy="14.5959" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+776,777c776,777
+<   <circle cx="282.811" cy="42.2285" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="282.811" cy="42.2285" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="282.842" cy="42.2117" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="282.842" cy="42.2117" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+780,781c780,781
+<   <circle cx="240.095" cy="375.892" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="240.095" cy="375.892" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="245.015" cy="377.663" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="245.015" cy="377.663" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+792,793c792,793
+<   <circle cx="161.478" cy="347.136" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="161.478" cy="347.136" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="161.742" cy="347.395" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="161.742" cy="347.395" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+800,801c800,801
+<   <circle cx="68.2777" cy="136.531" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="68.2777" cy="136.531" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="68.2774" cy="136.531" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="68.2774" cy="136.531" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+804,805c804,805
+<   <circle cx="137.06" cy="377.749" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="137.06" cy="377.749" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="136.851" cy="378.029" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="136.851" cy="378.029" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+808,809c808,809
+<   <circle cx="88.5861" cy="425.829" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="88.5861" cy="425.829" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="89.004" cy="425.937" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="89.004" cy="425.937" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+816,817c816,817
+<   <circle cx="436.852" cy="295.9" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="436.852" cy="295.9" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="436.919" cy="296.363" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="436.919" cy="296.363" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+820,821c820,821
+<   <circle cx="55.3782" cy="155.55" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="55.3782" cy="155.55" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="62.2257" cy="158.953" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="62.2257" cy="158.953" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+824,825c824,825
+<   <circle cx="76.7558" cy="436.644" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="76.7558" cy="436.644" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="76.4302" cy="436.936" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="76.4302" cy="436.936" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+828,829c828,829
+<   <circle cx="459.311" cy="32.7489" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="459.311" cy="32.7489" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="459.256" cy="33.2073" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="459.256" cy="33.2073" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+836,837c836,837
+<   <circle cx="24.2797" cy="419.143" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="24.2797" cy="419.143" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="24.3572" cy="419.483" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="24.3572" cy="419.483" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+840,841c840,841
+<   <circle cx="298.805" cy="300.568" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="298.805" cy="300.568" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="298.456" cy="301.079" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="298.456" cy="301.079" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+844,845c844,845
+<   <circle cx="365.132" cy="441.165" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="365.132" cy="441.165" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="366.418" cy="441.333" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="366.418" cy="441.333" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+848,849c848,849
+<   <circle cx="108.905" cy="424.391" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="108.905" cy="424.391" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="108.601" cy="423.272" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="108.601" cy="423.272" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+856,857c856,857
+<   <circle cx="490.448" cy="243.466" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="490.448" cy="243.466" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="490.516" cy="244.086" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="490.516" cy="244.086" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+860,861c860,861
+<   <circle cx="260.918" cy="338.735" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="260.918" cy="338.735" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="261.767" cy="338.379" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="261.767" cy="338.379" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+864,865c864,865
+<   <circle cx="428.666" cy="200.361" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="428.666" cy="200.361" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="428.525" cy="199.459" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="428.525" cy="199.459" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+868,869c868,869
+<   <circle cx="286.498" cy="453.118" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="286.498" cy="453.118" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="286.493" cy="453.118" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="286.493" cy="453.118" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+872,873c872,873
+<   <circle cx="82.7688" cy="410.896" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="82.7688" cy="410.896" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="82.6116" cy="410.503" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="82.6116" cy="410.503" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+876,877c876,877
+<   <circle cx="125.391" cy="317.265" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="125.391" cy="317.265" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="125.174" cy="317.709" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="125.174" cy="317.709" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+888,889c888,889
+<   <circle cx="124.213" cy="138.086" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="124.213" cy="138.086" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="123.973" cy="138.045" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="123.973" cy="138.045" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+892,893c892,893
+<   <circle cx="173.504" cy="456.41" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="173.504" cy="456.41" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="173.929" cy="456.164" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="173.929" cy="456.164" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+903,905c903,905
+<    <g id="cell219" type="epithelial_infected" dead="false" >
+<   <circle cx="255.795" cy="59.3648" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="255.795" cy="59.3648" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>    <g id="cell219" type="epithelial" dead="false" >
+>   <circle cx="255.098" cy="58.7827" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="255.098" cy="58.7827" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+908,909c908,909
+<   <circle cx="342.175" cy="362.267" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="342.175" cy="362.267" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="341.972" cy="362.078" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="341.972" cy="362.078" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+912,913c912,913
+<   <circle cx="483.723" cy="491.592" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="483.723" cy="491.592" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="484.554" cy="491.634" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="484.554" cy="491.634" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+916,917c916,917
+<   <circle cx="436.522" cy="214.327" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="436.522" cy="214.327" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="440.076" cy="210.643" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="440.076" cy="210.643" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+920,921c920,921
+<   <circle cx="111.74" cy="215.848" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="111.74" cy="215.848" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="111.74" cy="215.854" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="111.74" cy="215.854" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+924,925c924,925
+<   <circle cx="413.893" cy="206.569" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="413.893" cy="206.569" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="413.519" cy="206.735" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="413.519" cy="206.735" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+928,929c928,929
+<   <circle cx="207.709" cy="173.173" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="207.709" cy="173.173" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="207.481" cy="172.908" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="207.481" cy="172.908" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+936,937c936,937
+<   <circle cx="352.814" cy="431" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="352.814" cy="431" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="351.911" cy="432.016" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="351.911" cy="432.016" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+940,941c940,941
+<   <circle cx="200.591" cy="229.478" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="200.591" cy="229.478" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="200.912" cy="230.003" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="200.912" cy="230.003" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+944,945c944,945
+<   <circle cx="93.227" cy="345.177" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="93.227" cy="345.177" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="92.7293" cy="344.71" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="92.7293" cy="344.71" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+948,949c948,949
+<   <circle cx="73.2934" cy="327.038" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="73.2934" cy="327.038" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="74.6335" cy="326.469" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="74.6335" cy="326.469" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+952,953c952,953
+<   <circle cx="451.041" cy="115.021" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="451.041" cy="115.021" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="451.077" cy="114.105" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="451.077" cy="114.105" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+956,957c956,957
+<   <circle cx="256.172" cy="123.116" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="256.172" cy="123.116" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="257.245" cy="123.066" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="257.245" cy="123.066" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+960,961c960,961
+<   <circle cx="375.007" cy="219.949" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="375.007" cy="219.949" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="375.296" cy="219.758" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="375.296" cy="219.758" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+968,969c968,969
+<   <circle cx="281.052" cy="171.4" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="281.052" cy="171.4" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="280.174" cy="171.11" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="280.174" cy="171.11" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+972,973c972,973
+<   <circle cx="32.7718" cy="253.428" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="32.7718" cy="253.428" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="32.5806" cy="252.741" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="32.5806" cy="252.741" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+976,977c976,977
+<   <circle cx="356.21" cy="375.377" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="356.21" cy="375.377" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="356.213" cy="375.148" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="356.213" cy="375.148" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+980,981c980,981
+<   <circle cx="109.187" cy="346.163" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="109.187" cy="346.163" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="109.382" cy="346.231" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="109.382" cy="346.231" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+988,989c988,989
+<   <circle cx="348.817" cy="462.435" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="348.817" cy="462.435" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="349.947" cy="464.241" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="349.947" cy="464.241" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+992,993c992,993
+<   <circle cx="77.8676" cy="467.827" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="77.8676" cy="467.827" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="77.7959" cy="467.788" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="77.7959" cy="467.788" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1000,1001c1000,1001
+<   <circle cx="252.172" cy="422.527" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="252.172" cy="422.527" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="252.509" cy="422.853" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="252.509" cy="422.853" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1004,1005c1004,1005
+<   <circle cx="355.28" cy="307.921" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="355.28" cy="307.921" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="355.28" cy="307.889" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="355.28" cy="307.889" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1008,1009c1008,1009
+<   <circle cx="298.843" cy="399.985" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="298.843" cy="399.985" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="298.716" cy="399.267" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="298.716" cy="399.267" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1020,1021c1020,1021
+<   <circle cx="238.976" cy="359.839" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="238.976" cy="359.839" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="239.705" cy="359.293" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="239.705" cy="359.293" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1024,1025c1024,1025
+<   <circle cx="457.121" cy="348.899" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+<   <circle cx="457.121" cy="348.899" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+---
+>   <circle cx="456.513" cy="348.733" r="8.41271" stroke-width="0.5" stroke="black" fill="grey"/>
+>   <circle cx="456.513" cy="348.733" r="5.05167" stroke-width="0.5" stroke="grey" fill="grey"/>
+1028,1029c1028,1029
+<   <circle cx="377.249" cy="136.207" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="377.249" cy="136.207" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="377.249" cy="136.205" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="377.249" cy="136.205" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1036,1037c1036,1037
+<   <circle cx="128.176" cy="44.8843" r="8.00101" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="128.176" cy="44.8843" r="4.84939" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="127.554" cy="45.216" r="8.37825" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="127.554" cy="45.216" r="5.03114" stroke-width="0.5" stroke="red" fill="red"/>
+1040,1041c1040,1041
+<   <circle cx="371.529" cy="151.176" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="371.529" cy="151.176" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="371.194" cy="151.512" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="371.194" cy="151.512" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1044,1045c1044,1045
+<   <circle cx="315.009" cy="220.917" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="315.009" cy="220.917" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="315.002" cy="221" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="315.002" cy="221" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1048,1049c1048,1049
+<   <circle cx="407.311" cy="241.278" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="407.311" cy="241.278" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="437.039" cy="230.202" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="437.039" cy="230.202" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1052,1053c1052,1053
+<   <circle cx="33.5049" cy="208.02" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="33.5049" cy="208.02" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="34.9114" cy="206.83" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="34.9114" cy="206.83" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1056,1057c1056,1057
+<   <circle cx="160.147" cy="281.296" r="7.30216" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="160.147" cy="281.296" r="4.43696" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="159.252" cy="281.018" r="8.3415" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="159.252" cy="281.018" r="5.00892" stroke-width="0.5" stroke="red" fill="red"/>
+1060,1061c1060,1061
+<   <circle cx="360.056" cy="410.527" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="360.056" cy="410.527" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="356.406" cy="408.766" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="356.406" cy="408.766" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1068,1069c1068,1069
+<   <circle cx="190.771" cy="361.143" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="190.771" cy="361.143" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="201.64" cy="359.12" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="201.64" cy="359.12" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1071,1073c1071,1073
+<    <g id="cell288" type="epithelial_infected" dead="false" >
+<   <circle cx="180.925" cy="284.882" r="6.36318" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="180.925" cy="284.882" r="3.90391" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>    <g id="cell261" type="epithelial_infected" dead="false" >
+>   <circle cx="46.9121" cy="261.538" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="46.9121" cy="261.538" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1076,1077c1076,1077
+<   <circle cx="366.018" cy="244.164" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="366.018" cy="244.164" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="365.701" cy="244.943" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="365.701" cy="244.943" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1080,1081c1080,1081
+<   <circle cx="467.787" cy="86.8383" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="467.787" cy="86.8383" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="467.787" cy="86.8388" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="467.787" cy="86.8388" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1084,1085c1084,1085
+<   <circle cx="209.961" cy="59.8718" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="209.961" cy="59.8718" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="210.802" cy="59.6541" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="210.802" cy="59.6541" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1088,1089c1088,1089
+<   <circle cx="308.395" cy="203.436" r="7.7401" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="308.395" cy="203.436" r="4.70142" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="308.725" cy="203.995" r="8.36046" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="308.725" cy="203.995" r="5.02044" stroke-width="0.5" stroke="red" fill="red"/>
+1092,1093c1092,1093
+<   <circle cx="141.577" cy="37.734" r="8.00101" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="141.577" cy="37.734" r="4.84939" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="142.199" cy="37.4023" r="8.37825" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="142.199" cy="37.4023" r="5.03114" stroke-width="0.5" stroke="red" fill="red"/>
+1096,1097c1096,1097
+<   <circle cx="327.645" cy="311.927" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="327.645" cy="311.927" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="327.546" cy="311.245" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="327.546" cy="311.245" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1100,1101c1100,1101
+<   <circle cx="223.505" cy="78.132" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="223.505" cy="78.132" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="223.507" cy="78.1325" r="8.41271" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="223.507" cy="78.1325" r="5.05167" stroke-width="0.5" stroke="red" fill="red"/>
+1104,1105c1104,1105
+<   <circle cx="298.349" cy="192.781" r="7.7401" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="298.349" cy="192.781" r="4.70142" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="297.771" cy="191.598" r="8.36046" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="297.771" cy="191.598" r="5.02044" stroke-width="0.5" stroke="red" fill="red"/>
+1108,1109c1108,1109
+<   <circle cx="144.777" cy="171.178" r="9.58869" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="144.777" cy="171.178" r="5.16091" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="178.991" cy="249.473" r="8.52105" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="178.991" cy="249.473" r="5.11301" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1112,1113c1112,1113
+<   <circle cx="309.983" cy="472.12" r="9.28435" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="309.983" cy="472.12" r="5.14536" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="408.651" cy="488.909" r="8.49383" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="408.651" cy="488.909" r="5.09778" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1116,1117c1116,1117
+<   <circle cx="53.0123" cy="256.449" r="11.6612" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="53.0123" cy="256.449" r="5.14065" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="84.8155" cy="297.724" r="8.55043" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="84.8155" cy="297.724" r="5.12917" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1120,1121c1120,1121
+<   <circle cx="30.2882" cy="303.197" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="30.2882" cy="303.197" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="31.3132" cy="350.255" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="31.3132" cy="350.255" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1124,1125c1124,1125
+<   <circle cx="219.552" cy="463.947" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="219.552" cy="463.947" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="222.579" cy="470.942" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="222.579" cy="470.942" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1128,1129c1128,1129
+<   <circle cx="153.469" cy="477.946" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="153.469" cy="477.946" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="160.133" cy="416.346" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="160.133" cy="416.346" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1132,1133c1132,1133
+<   <circle cx="202.12" cy="304.582" r="9.11342" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="202.12" cy="304.582" r="5.13208" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="210.092" cy="281.178" r="8.47777" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="210.092" cy="281.178" r="5.08871" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1136,1137c1136,1137
+<   <circle cx="56.2555" cy="168.988" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+<   <circle cx="56.2555" cy="168.988" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+---
+>   <circle cx="83.3454" cy="197.499" r="8.41271" stroke-width="0.5" stroke="black" fill="yellow"/>
+>   <circle cx="83.3454" cy="197.499" r="5.05167" stroke-width="0.5" stroke="yellow" fill="yellow"/>
+1140,1141c1140,1141
+<   <circle cx="374.684" cy="412.389" r="7.30216" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="374.684" cy="412.389" r="4.43696" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="372.759" cy="409.825" r="8.3415" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="372.759" cy="409.825" r="5.00892" stroke-width="0.5" stroke="red" fill="red"/>
+1144,1145c1144,1145
+<   <circle cx="172.183" cy="276.836" r="6.36318" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="172.183" cy="276.836" r="3.90391" stroke-width="0.5" stroke="red" fill="red"/>
+---
+>   <circle cx="175.694" cy="279.864" r="8.3415" stroke-width="0.5" stroke="black" fill="red"/>
+>   <circle cx="175.694" cy="279.864" r="5.00892" stroke-width="0.5" stroke="red" fill="red"/>
+1147,1150d1146
+<    <g id="cell287" type="epithelial_infected" dead="false" >
+<   <circle cx="33.3011" cy="222.726" r="7.1497" stroke-width="0.5" stroke="black" fill="red"/>
+<   <circle cx="33.3011" cy="222.726" r="4.34001" stroke-width="0.5" stroke="red" fill="red"/>
+<    </g>
+1160c1156
+<    0 days, 0 hours, 0 minutes, and 1.4943 seconds
+---
+>    0 days, 0 hours, 0 minutes, and 0.4462 seconds
+
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final.xml
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/initial_mesh0.mat
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final_microenvironment0.mat
+Parsing virus data
+Parsing interferon data
+Reading local_runs/physicell-restart-repro_20260810_172829/split/output/final_cells.mat
+  no duplicate live cell IDs among 280 alive cells

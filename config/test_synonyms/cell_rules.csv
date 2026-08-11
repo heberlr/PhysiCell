@@ -1,0 +1,2 @@
+default,pressure,decreases,cycle entry,0,0.5,4,0
+default,pressure,increases,exit from cycle phase 0,0.0072,0.5,4,0
